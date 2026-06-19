@@ -1,37 +1,37 @@
 const categories = [
   {
     name: "Jadwal",
-    anchor: "#jadwal",
+    href: "jadwal/",
     icon: "🗓️",
     description: "Jadwal personal, RSUD, dan SGH dalam satu akses."
   },
   {
     name: "Personal",
-    anchor: "#personal",
+    href: "personal/",
     icon: "📝",
     description: "LMS, email, Familia Medika, dan publikasi."
   },
   {
     name: "M.A.R.S",
-    anchor: "#mars",
+    href: "mars/",
     icon: "🎓",
     description: "Portal akademik, referensi, kelas, dan tugas."
   },
   {
     name: "SGH",
-    anchor: "#sgh",
+    href: "sgh/",
     icon: "🏥",
     description: "Link kerja SGH dan dokumen akreditasi."
   },
   {
     name: "Family",
-    anchor: "#family",
+    href: "family/",
     icon: "👨‍👩‍👧",
     description: "Family journey, video, dan email."
   },
   {
     name: "RSUD",
-    anchor: "#rsud",
+    href: "rsud/",
     icon: "⚕️",
     description: "SIMRS, kinerja, rawat inap, ASN, dan casemix."
   }
@@ -544,8 +544,9 @@ function externalTarget(url) {
 }
 
 function renderMenu() {
+  if (!menuGrid) return;
   menuGrid.innerHTML = categories.map(category => `
-    <a class="menu-card" href="${category.anchor}">
+    <a class="menu-card" href="${category.href}">
       <span class="menu-icon" aria-hidden="true">${category.icon}</span>
       <span>
         <h3>${category.name}</h3>
@@ -634,7 +635,7 @@ function renderGroupedSections() {
 
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
-  themeToggle.textContent = theme === "light" ? "☀" : "☾";
+  if (themeToggle) themeToggle.textContent = theme === "light" ? "☀" : "☾";
   localStorage.setItem("notesme-theme", theme);
 }
 
@@ -647,23 +648,29 @@ function initTheme() {
 if (searchInput) {
   searchInput.addEventListener("input", renderLinks);
 }
-themeToggle.addEventListener("click", () => {
-  const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
-  applyTheme(next);
-});
-
-menuToggle.addEventListener("click", () => {
-  const expanded = menuToggle.getAttribute("aria-expanded") === "true";
-  menuToggle.setAttribute("aria-expanded", String(!expanded));
-  navLinks.classList.toggle("show");
-});
-
-navLinks.querySelectorAll("a").forEach(link => {
-  link.addEventListener("click", () => {
-    navLinks.classList.remove("show");
-    menuToggle.setAttribute("aria-expanded", "false");
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    applyTheme(next);
   });
-});
+}
+
+if (menuToggle && navLinks) {
+  menuToggle.addEventListener("click", () => {
+    const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+    menuToggle.setAttribute("aria-expanded", String(!expanded));
+    navLinks.classList.toggle("show");
+  });
+}
+
+if (navLinks && menuToggle) {
+  navLinks.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      navLinks.classList.remove("show");
+      menuToggle.setAttribute("aria-expanded", "false");
+    });
+  });
+}
 
 initTheme();
 renderMenu();

@@ -678,3 +678,28 @@ a {
     justify-content: start;
   }
 }
+
+
+/* Multi-page layout */
+.nav-links a.active {
+  color: var(--text);
+  background: var(--card-strong);
+}
+
+.site-header.inner-header {
+  min-height: auto;
+  padding-bottom: 38px;
+}
+
+.page-hero {
+  padding-top: 54px;
+  padding-bottom: 12px;
+}
+
+.page-hero .hero-copy h1 {
+  font-size: clamp(2.8rem, 5vw, 5.2rem);
+}
+
+.compact-status span {
+  min-height: 74px;
+}
