@@ -82,17 +82,17 @@ const links = [
     label: "Jadwal DU HRD",
     category: "Jadwal",
     section: "SGH",
-    url: "#",
+    url: "https://docs.google.com/spreadsheets/d/1IQeOye2DH0fgTDUUxdAJt8NtTbj0xVzbHMm42ArGdaE/edit?usp=sharing",
     sensitive: true,
-    description: "Isi URL sendiri jika aksesnya aman atau terbatas."
+    description: "Jadwal DU HRD."
   },
   {
     label: "Jadwal Rancangan",
     category: "Jadwal",
     section: "SGH",
-    url: "#",
+    url: "https://docs.google.com/spreadsheets/d/1Y2jXXtBeNZtdJXd-DI9uCZo8SLAQLPU7trOtgO_gJKQ/edit?usp=sharing",
     sensitive: true,
-    description: "Placeholder untuk rancangan jadwal."
+    description: "Jadwal rancangan SGH."
   },
 
   // PERSONAL
@@ -179,15 +179,15 @@ const links = [
     label: "Synthesis / Thesis",
     category: "M.A.R.S",
     section: "Akademik Utama",
-    url: "https://sinthesis.umy.ac.id/",
+    url: "https://sinthesis.umy.ac.id/mahasiswa/tugas-akhir",
     description: "Portal tesis/sintesis."
   },
   {
     label: "GForm Pengajuan Judul",
     category: "M.A.R.S",
     section: "Akademik Utama",
-    url: "#",
-    description: "Isi URL Google Form pengajuan judul."
+    url: "https://forms.gle/5tatLdEzDWX8sCnQ9",
+    description: "Google Form pengajuan judul."
   },
   {
     label: "Library",
@@ -195,6 +195,27 @@ const links = [
     section: "Referensi & Penelitian",
     url: "https://www.notesme.site/s2/perpustakaan",
     description: "Halaman library dari NotesMe lama."
+  },
+  {
+    label: "ProQuest Luar Kampus",
+    category: "M.A.R.S",
+    section: "Referensi & Penelitian",
+    url: "http://www.proquest.com/login",
+    description: "Akses ProQuest dari luar kampus."
+  },
+  {
+    label: "ProQuest Dalam Kampus",
+    category: "M.A.R.S",
+    section: "Referensi & Penelitian",
+    url: "http://www.proquest.com",
+    description: "Akses ProQuest dari jaringan kampus."
+  },
+  {
+    label: "Library UMY",
+    category: "M.A.R.S",
+    section: "Referensi & Penelitian",
+    url: "https://library.umy.ac.id/",
+    description: "Main page library UMY."
   },
   {
     label: "Remote Scopus",
@@ -214,7 +235,7 @@ const links = [
     label: "Notebook LM",
     category: "M.A.R.S",
     section: "Referensi & Penelitian",
-    url: "https://notebooklm.google.com/",
+    url: "https://notebooklm.google.com/notebook/7c3c9d58-cc50-45c8-871b-0764e09e0797",
     description: "Notebook LM untuk membaca dan merangkum sumber."
   },
   {
@@ -284,8 +305,8 @@ const links = [
     label: "Rekaman",
     category: "M.A.R.S",
     section: "Kelas Online / Komunikasi",
-    url: "https://www.notesme.site/s2/rekaman",
-    description: "Halaman rekaman kuliah."
+    url: "https://drive.google.com/file/d/15_IL3JbzErhjYJfCSCWRRLxipYiEtWsV/view?usp=drive_link",
+    description: "Rekaman bibliometric."
   },
   {
     label: "Web Mail",
@@ -305,8 +326,8 @@ const links = [
     label: "UTS",
     category: "M.A.R.S",
     section: "Tugas",
-    url: "#",
-    description: "Isi URL dokumen UTS."
+    url: "https://docs.google.com/spreadsheets/d/1hX-e9IzQFnzUA4VwQ_1JFJKyQ8EZo9cn/edit?ouid=100668610343235378558&rtpof=true&sd=true&usp=drive_link",
+    description: "Dokumen UTS."
   },
 
   // SGH
@@ -314,25 +335,25 @@ const links = [
     label: "Register Pasien SGH",
     category: "SGH",
     section: "Operasional",
-    url: "#",
+    url: "https://docs.google.com/spreadsheets/d/1nGQOl939xO-qo5IoXhhFSsfARX0m3d2e4A61on2F4d4/edit?usp=sharing",
     sensitive: true,
-    description: "Placeholder. Jangan taruh link register pasien di halaman publik."
+    description: "Register pasien SGH."
   },
   {
     label: "Aviat In Hospital",
     category: "SGH",
     section: "Operasional",
-    url: "#",
+    url: "http://192.168.30.1/LIVE",
     sensitive: true,
-    description: "Akses internal/VPN. Isi URL sendiri bila halaman tidak publik."
+    description: "Aviat in hospital."
   },
   {
     label: "Aviat Out Hospital",
     category: "SGH",
     section: "Operasional",
-    url: "#",
+    url: "http://103.105.252.26:8090/LIVE4/Login/Login.aspx",
     sensitive: true,
-    description: "Akses internal/VPN. Isi URL sendiri bila halaman tidak publik."
+    description: "Aviat out hospital."
   },
   {
     label: "Akreditasi SGH",
@@ -401,9 +422,9 @@ const links = [
     label: "SIMRS 4",
     category: "RSUD",
     section: "SIMRS",
-    url: "#",
+    url: "http://10.142.9.44/",
     sensitive: true,
-    description: "Alamat IP internal. Isi URL sendiri dan akses via VPN/jaringan internal."
+    description: "Alamat IP internal SIMRS 4."
   },
   {
     label: "RME",
@@ -417,25 +438,25 @@ const links = [
     label: "Register IGD",
     category: "RSUD",
     section: "Register",
-    url: "#",
+    url: "https://docs.google.com/spreadsheets/d/1_4rXgikDVXzBSvUeh91pCAN1G9uTOIcgckou259SxiM/edit?gid=2061171232",
     sensitive: true,
-    description: "Placeholder. Jangan taruh link register pasien di GitHub Pages publik."
+    description: "Register pasien IGD RSUD."
   },
   {
     label: "Rawat Inap",
     category: "RSUD",
     section: "Register",
-    url: "#",
+    url: "https://docs.google.com/spreadsheets/d/1ATH77K6ugUCv7dtCl1kNfUCNmwXv1R1p/edit?gid=1072889558",
     sensitive: true,
-    description: "Placeholder untuk register/rawat inap."
+    description: "Register rawat inap RSUD."
   },
   {
     label: "VK-Perina-Nifas",
     category: "RSUD",
     section: "Register",
-    url: "#",
+    url: "https://docs.google.com/spreadsheets/d/1RmL5fG08-5Q9V3idJPRIzH6DndbK5Si2Nk_meR5tHYQ/edit?gid=793719483",
     sensitive: true,
-    description: "Placeholder untuk VK/Perina/Nifas."
+    description: "Register VK/Perina/Nifas."
   },
   {
     label: "ASN Digital",
@@ -462,23 +483,23 @@ const links = [
     label: "Administrasi Kepegawaian",
     category: "RSUD",
     section: "Kinerja",
-    url: "#",
-    description: "Isi URL Linktree/administrasi kepegawaian."
+    url: "https://linktr.ee/kepegawaianRSSA",
+    description: "Linktree administrasi kepegawaian RSSA."
   },
   {
     label: "Lampiran SKP ASN",
     category: "RSUD",
     section: "Kinerja",
-    url: "#",
-    description: "Isi URL lampiran SKP ASN."
+    url: "https://drive.google.com/drive/folders/13ODJICZxPBvoSKc8t4UaUqftMvBUW4bd?usp=drive_link",
+    description: "Folder lampiran SKP ASN."
   },
   {
     label: "G-Drive Rawat Inap",
     category: "RSUD",
     section: "Rawat Inap",
-    url: "#",
+    url: "https://drive.google.com/drive/folders/1nRRDeQfju2PsVymoZYodppKhVXiVZys_?usp=sharing",
     sensitive: true,
-    description: "Isi URL drive rawat inap bila akses aman."
+    description: "Folder G-Drive rawat inap."
   },
   {
     label: "Laporan Mutu",
@@ -491,36 +512,36 @@ const links = [
     label: "Buku Kerja 2025",
     category: "RSUD",
     section: "Tugas ASN",
-    url: "#",
-    description: "Isi URL buku kerja 2025."
+    url: "https://docs.google.com/spreadsheets/d/1W4_XEzDFaiJN1mUKKk2ph831nioerJRTzOEfZTWbXvE/edit?usp=sharing",
+    description: "Buku kerja 2025."
   },
   {
     label: "Logbook & Laporan Harian 2025",
     category: "RSUD",
     section: "Tugas ASN",
-    url: "#",
-    description: "Isi URL logbook dan laporan harian 2025."
+    url: "https://docs.google.com/spreadsheets/d/1oCwFnKHHT_yOEtdQKC--gAhhxk63QjEp_Xxa_RIZshQ/edit?usp=sharing",
+    description: "Logbook dan laporan harian 2025."
   },
   {
     label: "Laporan Harian/Triwulan/Buku Kerja 2026",
     category: "RSUD",
     section: "Tugas ASN",
-    url: "#",
-    description: "Isi URL folder 2026."
+    url: "https://drive.google.com/drive/u/1/folders/1OWTQVdcVHQIwNVtKd37iTVS-shK-cC5y",
+    description: "Folder laporan 2026."
   },
   {
     label: "Simulasi Penjaminan",
     category: "RSUD",
     section: "Casemix",
-    url: "#",
-    description: "Isi URL simulasi penjaminan."
+    url: "https://docs.google.com/spreadsheets/d/1nN8h5mqUakO3NnIL4KfVWJpC1mKJBClRnQuwgKbRTL8/edit?gid=0",
+    description: "Simulasi biaya klaim 2026."
   },
   {
     label: "Pemantauan Biaya E-Claim",
     category: "RSUD",
     section: "Casemix",
-    url: "#",
-    description: "Isi URL pemantauan biaya e-claim."
+    url: "https://docs.google.com/spreadsheets/d/1uh52_iFK6FTl-5X_7GC-5PXstysvkIyuj8G67duNvH8/edit?gid=0&pli=1",
+    description: "Formulir pemantauan biaya e-claim 2025."
   }
 ];
 
