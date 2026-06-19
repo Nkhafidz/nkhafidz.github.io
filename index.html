@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NotesMe — Landing Page Pribadi</title>
+  <meta name="description" content="Landing page pribadi NotesMe untuk jadwal, akademik M.A.R.S, personal notes, SGH, Family, dan RSUD." />
+  <meta name="theme-color" content="#0f172a" />
+  <meta property="og:title" content="NotesMe — Landing Page Pribadi" />
+  <meta property="og:description" content="Mini notes dan quick access pribadi dalam satu halaman." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='22' fill='%230f172a'/%3E%3Cpath d='M27 25h42v8H27zm0 17h42v8H27zm0 17h30v8H27z' fill='%23f8fafc'/%3E%3Ccircle cx='70' cy='66' r='9' fill='%23f59e0b'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-orb orb-one"></div>
+  <div class="bg-orb orb-two"></div>
+  <div class="bg-grid"></div>
+
+  <header class="site-header" id="top">
+    <nav class="nav container" aria-label="Navigasi utama">
+      <a class="brand" href="#top" aria-label="NotesMe Home">
+        <span class="brand-mark">N</span>
+        <span class="brand-text">NotesMe</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navLinks">☰</button>
+      <div class="nav-links" id="navLinks">
+        <a href="#menu">Menu</a>
+        <a href="#jadwal">Jadwal</a>
+        <a href="#personal">Personal</a>
+        <a href="#mars">M.A.R.S</a>
+        <a href="#rsud">RSUD</a>
+        <a href="#kontak">Kontak</a>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Ubah tema">☾</button>
+      </div>
+    </nav>
+
+    <section class="hero container">
+      <div class="hero-copy">
+        <span class="eyebrow">Personal Link Hub · GitHub Pages Ready</span>
+        <h1>Landing page pribadi untuk semua catatan dan akses penting.</h1>
+        <p>
+          Versi GitHub dari NotesMe: rapi, ringan, responsif, dan mudah diedit.
+          Semua menu utama disusun seperti Google Sites Anda: Jadwal, Personal Notes,
+          M.A.R.S, SGH, Family, dan RSUD.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#menu">Buka Menu</a>
+          <a class="btn secondary" href="mailto:khafidz.subekti@gmail.com">Email Saya</a>
+        </div>
+      </div>
+      <aside class="hero-card" aria-label="Ringkasan profil">
+        <div class="profile-badge">NM</div>
+        <h2>Mini Notes</h2>
+        <p>Quick access dashboard untuk aktivitas pribadi, akademik, dan pekerjaan.</p>
+        <div class="status-list">
+          <span><b>7</b> kategori</span>
+          <span><b>GitHub</b> Pages</span>
+          <span><b>Static</b> HTML/CSS/JS</span>
+        </div>
+      </aside>
+    </section>
+  </header>
+
+  <main>
+    <section class="container section" id="menu">
+      <div class="section-heading">
+        <span class="eyebrow">Menu Utama</span>
+        <h2>Mini Notes</h2>
+        <p>Pilih kategori untuk masuk ke daftar tautan yang Anda butuhkan.</p>
+      </div>
+      <div class="menu-grid" id="menuGrid"></div>
+    </section>
+
+    <section class="container section" id="quick-access">
+      <div class="section-heading split">
+        <div>
+          <span class="eyebrow">Quick Access</span>
+          <h2>Cari tautan dengan cepat</h2>
+          <p>Ketik kata kunci seperti “jadwal”, “MARS”, “RSUD”, “drive”, atau “mail”.</p>
+        </div>
+        <label class="search-wrap" for="searchInput">
+          <span>⌕</span>
+          <input id="searchInput" type="search" placeholder="Cari link..." autocomplete="off" />
+        </label>
+      </div>
+      <div class="chips" id="chips" aria-label="Filter kategori"></div>
+      <div class="links-grid" id="linksGrid"></div>
+      <p class="empty-state" id="emptyState" hidden>Tidak ada tautan yang cocok.</p>
+    </section>
+
+    <section class="container section grouped-section" id="jadwal">
+      <div class="section-heading">
+        <span class="eyebrow">Kategori</span>
+        <h2>Jadwal</h2>
+        <p>Rangkuman akses jadwal personal, RSUD, dan SGH.</p>
+      </div>
+      <div class="grouped-links" data-category="Jadwal"></div>
+    </section>
+
+    <section class="container section grouped-section" id="personal">
+      <div class="section-heading">
+        <span class="eyebrow">Kategori</span>
+        <h2>Personal Notes</h2>
+        <p>Catatan personal, Familia Medika, dan publikasi.</p>
+      </div>
+      <div class="grouped-links" data-category="Personal"></div>
+    </section>
+
+    <section class="container section grouped-section" id="mars">
+      <div class="section-heading">
+        <span class="eyebrow">Kategori</span>
+        <h2>M.A.R.S</h2>
+        <p>Portal akademik, referensi, komunikasi kelas, dan tugas.</p>
+      </div>
+      <div class="grouped-links" data-category="M.A.R.S"></div>
+    </section>
+
+    <section class="container section grouped-section" id="sgh">
+      <div class="section-heading">
+        <span class="eyebrow">Kategori</span>
+        <h2>SGH</h2>
+        <p>Akses SGH dan file kerja. Beberapa tautan internal sengaja dibuat placeholder.</p>
+      </div>
+      <div class="grouped-links" data-category="SGH"></div>
+    </section>
+
+    <section class="container section grouped-section" id="family">
+      <div class="section-heading">
+        <span class="eyebrow">Kategori</span>
+        <h2>Family</h2>
+        <p>Akses family journey, video, dan email.</p>
+      </div>
+      <div class="grouped-links" data-category="Family"></div>
+    </section>
+
+    <section class="container section grouped-section" id="rsud">
+      <div class="section-heading">
+        <span class="eyebrow">Kategori</span>
+        <h2>RSUD</h2>
+        <p>Portal SIMRS, kinerja, rawat inap, tugas ASN, dan casemix.</p>
+      </div>
+      <div class="grouped-links" data-category="RSUD"></div>
+    </section>
+
+    <section class="container section privacy-note" id="catatan-privasi">
+      <div>
+        <span class="eyebrow">Catatan Penting</span>
+        <h2>Jangan unggah tautan sensitif ke GitHub Pages publik.</h2>
+        <p>
+          GitHub Pages bersifat statis dan pada umumnya dapat diakses publik. Untuk tautan register pasien,
+          SIMRS internal, RME, atau dokumen yang berisi data pribadi, gunakan akses terbatas: VPN,
+          Google Drive restricted access, repository private sesuai paket, atau proteksi tambahan seperti Cloudflare Access.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="kontak">
+    <div class="container footer-inner">
+      <div>
+        <strong>NotesMe</strong>
+        <p>Landing page pribadi berbasis GitHub Pages.</p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:khafidz.subekti@gmail.com">khafidz.subekti@gmail.com</a>
+        <a href="#top">Kembali ke atas ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
