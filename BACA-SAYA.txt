@@ -1,0 +1,20 @@
+NOTESME — PAKET UPDATE SIAP UPLOAD
+===================================
+Berisi semua perubahan yang dibahas (tanpa perubahan domain):
+1. script.js       -> kartu "Google Drive" di halaman Personal + logo kategori di homepage
+2. style.css       -> styling logo kategori (wadah putih membulat)
+3. mars/index.html -> NIM 20251030053 di kartu ringkasan halaman M.A.R.S
+4. assets/logos/   -> 6 file logo (jadwal, personal, mars, sgh, family, rsud)
+
+CARA UPLOAD (via github.com):
+1. Buka repo nkhafidz/nkhafidz.github.io
+2. Klik "Add file" -> "Upload files"
+3. Drag & drop SEMUA isi folder ini (script.js, style.css, folder mars, folder assets)
+   PENTING: drag isi foldernya, bukan folder zip. Struktur folder harus sama persis:
+   - script.js dan style.css di root repo
+   - mars/index.html menimpa yang lama
+   - assets/logos/*.png masuk sebagai folder baru
+4. GitHub akan menimpa file lama dengan versi baru secara otomatis
+5. Tulis pesan commit, misal: "Update: logo kategori, GDrive link, NIM MARS"
+6. Klik "Commit changes"
+7. Tunggu 1-2 menit, lalu refresh https://nkhafidz.github.io/ (Ctrl+Shift+R)

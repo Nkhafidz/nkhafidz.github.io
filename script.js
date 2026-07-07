@@ -3,36 +3,42 @@ const categories = [
     name: "Jadwal",
     href: "jadwal/",
     icon: "🗓️",
+    image: "assets/logos/jadwal.png",
     description: "Jadwal personal, RSUD, dan SGH dalam satu akses."
   },
   {
     name: "Personal",
     href: "personal/",
     icon: "📝",
+    image: "assets/logos/personal.png",
     description: "LMS, email, Familia Medika, dan publikasi."
   },
   {
     name: "M.A.R.S",
     href: "mars/",
     icon: "🎓",
+    image: "assets/logos/mars.png",
     description: "Portal akademik, referensi, kelas, dan tugas."
   },
   {
     name: "SGH",
     href: "sgh/",
     icon: "🏥",
+    image: "assets/logos/sgh.png",
     description: "Link kerja SGH dan dokumen akreditasi."
   },
   {
     name: "Family",
     href: "family/",
     icon: "👨‍👩‍👧",
+    image: "assets/logos/family.png",
     description: "Family journey, video, dan email."
   },
   {
     name: "RSUD",
     href: "rsud/",
     icon: "⚕️",
+    image: "assets/logos/rsud.png",
     description: "SIMRS, kinerja, rawat inap, ASN, dan casemix."
   }
 ];
@@ -109,6 +115,13 @@ const links = [
     section: "Personal",
     url: "https://docs.google.com/spreadsheets/d/1Iq26AuFFYWQfq6NGvXBBkXY37mWNwJqZMT9YPYPVv9U/edit?usp=sharing",
     description: "Catatan mail personal. Pastikan akses Google Sheet sudah restricted bila perlu."
+  },
+  {
+    label: "Google Drive",
+    category: "Personal",
+    section: "Personal",
+    url: "https://drive.google.com/drive/my-drive?hl=ID",
+    description: "Akses Google Drive personal (My Drive)."
   },
   {
     label: "Familia Medika Drive",
@@ -568,7 +581,9 @@ function renderMenu() {
   if (!menuGrid) return;
   menuGrid.innerHTML = categories.map(category => `
     <a class="menu-card" href="${category.href}">
-      <span class="menu-icon" aria-hidden="true">${category.icon}</span>
+      ${category.image
+        ? `<span class="menu-logo"><img src="${category.image}" alt="Logo ${category.name}" loading="lazy" /></span>`
+        : `<span class="menu-icon" aria-hidden="true">${category.icon}</span>`}
       <span>
         <h3>${category.name}</h3>
         <p>${category.description}</p>
