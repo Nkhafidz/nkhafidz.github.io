@@ -196,6 +196,13 @@ const links = [
     description: "Portal tesis/sintesis."
   },
   {
+    label: "Ethical Clearance — KEPK FKIK UMY",
+    category: "M.A.R.S",
+    section: "Akademik Utama",
+    url: "https://simepk-fkik.umy.ac.id/index.php/dashboard",
+    description: "Dashboard SIM-EPK untuk pengajuan ethical clearance penelitian."
+  },
+  {
     label: "GForm Pengajuan Judul",
     category: "M.A.R.S",
     section: "Akademik Utama",
