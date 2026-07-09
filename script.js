@@ -676,6 +676,16 @@ function renderGroupedSections() {
   });
 }
 
+function renderPageLogo() {
+  const badge = document.querySelector(".profile-badge");
+  const wrapper = document.querySelector(".grouped-links[data-category]");
+  if (!badge || !wrapper) return;
+  const category = categories.find(item => item.name === wrapper.dataset.category);
+  if (!category || !category.image) return;
+  badge.classList.add("has-logo");
+  badge.innerHTML = `<img src="../${category.image}" alt="Logo ${category.name}" />`;
+}
+
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   if (themeToggle) themeToggle.textContent = theme === "light" ? "☀" : "☾";
@@ -720,3 +730,4 @@ renderMenu();
 renderChips();
 renderLinks();
 renderGroupedSections();
+renderPageLogo();
