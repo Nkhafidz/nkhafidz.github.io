@@ -178,7 +178,7 @@ const links = [
     label: "Jadwal Kuliah Sem 1",
     category: "M.A.R.S",
     section: "Akademik Utama",
-    url: "https://drive.google.com/drive/folders/15cG42Sw6NM3EigX6CkTVYCslqOljr2iB?usp=drive_link",
+    url: "https://drive.google.com/drive/folders/15cG42Sw6NM3EigX6CkTVYCslqOljr2iB?usp=drive_link&authuser=khafidz.mars@gmail.com",
     description: "Folder jadwal kuliah semester 1."
   },
   {
@@ -297,7 +297,7 @@ const links = [
     label: "Publikasi — Drive",
     category: "M.A.R.S",
     section: "Referensi & Penelitian",
-    url: "https://drive.google.com/drive/folders/1Y00BJfJ6icwK-Rcz93ebkJfH6ZfDdGqS?usp=sharing",
+    url: "https://drive.google.com/drive/folders/1Y00BJfJ6icwK-Rcz93ebkJfH6ZfDdGqS?usp=sharing&authuser=khafidz.mars@gmail.com",
     description: "Folder publikasi."
   },
   {
@@ -311,21 +311,21 @@ const links = [
     label: "G-Drive",
     category: "M.A.R.S",
     section: "Kelas Online / Komunikasi",
-    url: "https://drive.google.com/drive/u/1/home",
+    url: "https://drive.google.com/drive/home?authuser=khafidz.mars@gmail.com",
     description: "Google Drive akun kelas/akademik."
   },
   {
     label: "G-Drive Class",
     category: "M.A.R.S",
     section: "Kelas Online / Komunikasi",
-    url: "https://drive.google.com/drive/folders/1XuUwEsYSwSAkqTC1aN00yqKeSTnCbUVA?usp=sharing",
+    url: "https://drive.google.com/drive/folders/1XuUwEsYSwSAkqTC1aN00yqKeSTnCbUVA?usp=sharing&authuser=khafidz.mars@gmail.com",
     description: "Folder kelas Pascasarjana."
   },
   {
     label: "Rekaman",
     category: "M.A.R.S",
     section: "Kelas Online / Komunikasi",
-    url: "https://drive.google.com/file/d/15_IL3JbzErhjYJfCSCWRRLxipYiEtWsV/view?usp=drive_link",
+    url: "https://drive.google.com/file/d/15_IL3JbzErhjYJfCSCWRRLxipYiEtWsV/view?usp=drive_link&authuser=khafidz.mars@gmail.com",
     description: "Rekaman bibliometric."
   },
   {
