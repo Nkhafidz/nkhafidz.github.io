@@ -168,6 +168,13 @@ const links = [
     description: "KRS online UMY."
   },
   {
+    label: "Drive Kuliah & Tesis",
+    category: "M.A.R.S",
+    section: "Akademik Utama",
+    url: "https://drive.google.com/drive/my-drive?authuser=khafidz.mars@gmail.com",
+    description: "Semua materi perkuliahan & penelitian tesis. Akun: khafidz.mars@gmail.com"
+  },
+  {
     label: "Jadwal Kuliah Sem 1",
     category: "M.A.R.S",
     section: "Akademik Utama",
