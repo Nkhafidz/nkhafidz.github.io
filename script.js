@@ -60,7 +60,7 @@ const links = [
     label: "Jadwal Personal 2026",
     category: "Jadwal",
     section: "Personal",
-    url: "https://docs.google.com/spreadsheets/d/194OkyxDa0fbzobA4MwxowsubP3E0h_4ABaX3Rgc-crI/edit?usp=sharing",
+    url: "https://docs.google.com/spreadsheets/d/1GRUME13F4RFFmlEFo_7rqjjVXtG_B7Lltg16xcehduw/edit?usp=sharing",
     description: "Jadwal personal tahun 2026."
   },
   {
