@@ -466,7 +466,7 @@ const links = [
     label: "Rawat Inap",
     category: "RSUD",
     section: "Register",
-    url: "https://docs.google.com/spreadsheets/d/1ATH77K6ugUCv7dtCl1kNfUCNmwXv1R1p/edit?gid=1072889558",
+    url: "https://docs.google.com/spreadsheets/d/1uKdYkme2gjPbSOGZBm8lMOiGT7y_4tW1KZthYwxcSOw/edit?gid=1072889558#gid=1072889558",
     sensitive: true,
     description: "Register rawat inap RSUD."
   },
@@ -557,11 +557,20 @@ const links = [
     description: "Simulasi biaya klaim 2026."
   },
   {
-    label: "Pemantauan Biaya E-Claim",
+    label: "Register IGD",
     category: "RSUD",
     section: "Casemix",
-    url: "https://docs.google.com/spreadsheets/d/1uh52_iFK6FTl-5X_7GC-5PXstysvkIyuj8G67duNvH8/edit?gid=0&pli=1",
-    description: "Formulir pemantauan biaya e-claim 2025."
+    url: "https://docs.google.com/spreadsheets/d/1_4rXgikDVXzBSvUeh91pCAN1G9uTOIcgckou259SxiM/edit?gid=194536492#gid=194536492",
+    sensitive: true,
+    description: "Register IGD untuk pemantauan casemix."
+  },
+  {
+    label: "Register Rawat Inap",
+    category: "RSUD",
+    section: "Casemix",
+    url: "https://docs.google.com/spreadsheets/d/1uKdYkme2gjPbSOGZBm8lMOiGT7y_4tW1KZthYwxcSOw/edit?gid=1072889558#gid=1072889558",
+    sensitive: true,
+    description: "Register rawat inap untuk pemantauan casemix."
   }
 ];
 
