@@ -514,6 +514,13 @@ const links = [
     description: "Folder lampiran SKP ASN."
   },
   {
+    label: "Corpu",
+    category: "RSUD",
+    section: "Kinerja",
+    url: "https://corpu.bantulkab.go.id/student/dashboard",
+    description: "Dashboard Corporate University Bantul."
+  },
+  {
     label: "G-Drive Rawat Inap",
     category: "RSUD",
     section: "Rawat Inap",
