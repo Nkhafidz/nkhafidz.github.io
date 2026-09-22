@@ -510,7 +510,7 @@ const links = [
     label: "Laporan Tukar Jadwal",
     category: "RSUD",
     section: "Kinerja",
-    url: "https://bit.ly/FILETUKARJADWALRSSA",
+    url: "https://docs.google.com/spreadsheets/d/1zKrkpWAYjs7JEy0gVe-jI6rtBJrxLIKw5LFZRxB6Aeg/edit?resourcekey=&pli=1&gid=1331287142#gid=1331287142",
     sensitive: true,
     description: "Laporan pengajuan tukar jadwal staf RSSA."
   },
