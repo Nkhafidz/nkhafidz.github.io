@@ -507,6 +507,14 @@ const links = [
     description: "Linktree administrasi kepegawaian RSSA."
   },
   {
+    label: "Laporan Tukar Jadwal",
+    category: "RSUD",
+    section: "Kinerja",
+    url: "https://bit.ly/FILETUKARJADWALRSSA",
+    sensitive: true,
+    description: "Laporan pengajuan tukar jadwal staf RSSA."
+  },
+  {
     label: "Lampiran SKP ASN",
     category: "RSUD",
     section: "Kinerja",
