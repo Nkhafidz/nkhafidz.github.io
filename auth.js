@@ -150,7 +150,9 @@
             message.className = "auth-message success";
             window.location.replace(next);
           } catch (err) {
-            message.textContent = "Verifikasi fingerprint gagal atau dibatalkan. Silakan pakai password, atau daftar ulang fingerprint di bawah.";
+            const name = (err && err.name) || "Error";
+            const detail = (err && err.message) || "tidak ada detail";
+            message.textContent = `Verifikasi fingerprint gagal — ${name}: ${detail}. Silakan pakai password, atau daftar ulang fingerprint di bawah.`;
             message.className = "auth-message error";
             fpLoginBtn.disabled = false;
             if (fpResetBtn) fpResetBtn.hidden = false;
@@ -215,16 +217,21 @@
       if (fpEnableBtn) {
         fpEnableBtn.addEventListener("click", async () => {
           fpEnableBtn.disabled = true;
-          if (fpMessage) fpMessage.textContent = "Ikuti instruksi sensor fingerprint / Face ID di perangkat...";
+          if (fpMessage) {
+            fpMessage.textContent = "Ikuti instruksi sensor fingerprint / Face ID di perangkat...";
+            fpMessage.className = "auth-message";
+          }
           try {
             await fpRegister();
             window.location.replace(next);
           } catch (err) {
             if (fpMessage) {
-              fpMessage.textContent = "Gagal mengaktifkan fingerprint. Melanjutkan tanpa fingerprint.";
+              const name = (err && err.name) || "Error";
+              const detail = (err && err.message) || "tidak ada detail";
+              fpMessage.textContent = `Gagal mengaktifkan fingerprint — ${name}: ${detail}. Tap "Aktifkan Fingerprint" untuk coba lagi, atau "Lewati" untuk lanjut tanpa fingerprint.`;
               fpMessage.className = "auth-message error";
             }
-            setTimeout(() => window.location.replace(next), 1200);
+            fpEnableBtn.disabled = false;
           }
         });
       }
