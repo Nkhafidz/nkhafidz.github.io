@@ -28,6 +28,11 @@
       <p class="login-subtitle">Halaman ini hanya untuk akses pribadi. Masukkan username dan password untuk membuka dashboard.</p>
 
       <form class="login-form" id="loginForm" autocomplete="off">
+        <button type="button" class="btn secondary fp-login-btn" id="fpLoginBtn" hidden>
+          <span class="fp-icon" aria-hidden="true">👆</span> Masuk dengan Fingerprint
+        </button>
+        <p class="fp-divider" id="fpDivider" hidden><span>atau</span></p>
+
         <label for="username">Username</label>
         <input id="username" name="username" type="text" inputmode="text" autocomplete="username" placeholder="Masukkan username" required />
 
@@ -40,6 +45,15 @@
         <p class="auth-message" id="loginMessage" role="status" aria-live="polite"></p>
         <button class="btn primary login-submit" type="submit">Masuk</button>
       </form>
+
+      <div class="fp-prompt" id="fpPrompt" hidden>
+        <p class="fp-prompt-text">Login berhasil. Aktifkan fingerprint di perangkat ini supaya login berikutnya lebih cepat?</p>
+        <p class="auth-message" id="fpMessage" role="status" aria-live="polite"></p>
+        <div class="fp-prompt-actions">
+          <button class="btn primary" id="fpEnableBtn" type="button">Aktifkan Fingerprint</button>
+          <button class="btn secondary" id="fpSkipBtn" type="button">Lewati</button>
+        </div>
+      </div>
     </section>
   </main>
 </body>
