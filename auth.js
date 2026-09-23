@@ -97,6 +97,7 @@
     return navigator.credentials.get({
       publicKey: {
         challenge,
+        rpId: FP_RP_ID,
         allowCredentials: [{ id: base64ToBuf(idB64), type: "public-key", transports: ["internal"] }],
         userVerification: "required",
         timeout: 60000
