@@ -822,32 +822,30 @@ a {
   margin-top: 2px;
 }
 
-.fp-login-btn {
-  width: 100%;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.fp-icon {
-  font-size: 1.1rem;
-}
-
-.fp-divider {
+.fp-icon-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 4px 0 14px;
-  color: var(--muted);
-  font-size: 0.82rem;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin: 6px auto 2px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.fp-divider::before,
-.fp-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--line);
+.fp-icon-btn:hover {
+  border-color: var(--primary);
+  background: var(--card-strong);
+}
+
+.fp-icon-btn:active {
+  transform: scale(0.94);
 }
 
 .fp-prompt {

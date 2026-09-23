@@ -121,7 +121,6 @@
       const next = safeNext(params.get("next"));
 
       const fpLoginBtn = document.getElementById("fpLoginBtn");
-      const fpDivider = document.getElementById("fpDivider");
       const fpPrompt = document.getElementById("fpPrompt");
       const fpEnableBtn = document.getElementById("fpEnableBtn");
       const fpSkipBtn = document.getElementById("fpSkipBtn");
@@ -133,9 +132,8 @@
       }
 
       (async () => {
-        if (fpLoginBtn && fpDivider && fpHasCredential() && (await fpAvailable())) {
+        if (fpLoginBtn && fpHasCredential() && (await fpAvailable())) {
           fpLoginBtn.hidden = false;
-          fpDivider.hidden = false;
         }
       })();
 
