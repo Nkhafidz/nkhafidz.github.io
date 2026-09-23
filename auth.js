@@ -6,7 +6,6 @@
   const PASSWORD_HASH = "7192220195ebb04f635e1c60e75a4e1060149ca7cf58f72912ec63fe836298a2";
 
   const FP_ID_KEY = "notesme_fp_credential_id";
-  const FP_DECLINED_KEY = "notesme_fp_declined";
   const FP_RP_ID = "notesme.site";
 
   const path = window.location.pathname.toLowerCase();
@@ -87,7 +86,6 @@
     });
 
     window.localStorage.setItem(FP_ID_KEY, bufToBase64(credential.rawId));
-    window.localStorage.removeItem(FP_DECLINED_KEY);
   }
 
   async function fpLogin() {
@@ -183,7 +181,6 @@
 
           const offerFp = fpPrompt
             && !fpHasCredential()
-            && !window.localStorage.getItem(FP_DECLINED_KEY)
             && (await fpAvailable());
 
           if (offerFp) {
@@ -224,7 +221,6 @@
 
       if (fpSkipBtn) {
         fpSkipBtn.addEventListener("click", () => {
-          window.localStorage.setItem(FP_DECLINED_KEY, "1");
           window.location.replace(next);
         });
       }
