@@ -78,7 +78,7 @@
         authenticatorSelection: {
           authenticatorAttachment: "platform",
           userVerification: "required",
-          residentKey: "preferred"
+          residentKey: "discouraged"
         },
         timeout: 60000,
         attestation: "none"
@@ -121,6 +121,7 @@
       const next = safeNext(params.get("next"));
 
       const fpLoginBtn = document.getElementById("fpLoginBtn");
+      const fpResetBtn = document.getElementById("fpResetBtn");
       const fpPrompt = document.getElementById("fpPrompt");
       const fpEnableBtn = document.getElementById("fpEnableBtn");
       const fpSkipBtn = document.getElementById("fpSkipBtn");
@@ -149,10 +150,21 @@
             message.className = "auth-message success";
             window.location.replace(next);
           } catch (err) {
-            message.textContent = "Verifikasi fingerprint gagal atau dibatalkan. Silakan pakai password.";
+            message.textContent = "Verifikasi fingerprint gagal atau dibatalkan. Silakan pakai password, atau daftar ulang fingerprint di bawah.";
             message.className = "auth-message error";
             fpLoginBtn.disabled = false;
+            if (fpResetBtn) fpResetBtn.hidden = false;
           }
+        });
+      }
+
+      if (fpResetBtn) {
+        fpResetBtn.addEventListener("click", () => {
+          window.localStorage.removeItem(FP_ID_KEY);
+          if (fpLoginBtn) fpLoginBtn.hidden = true;
+          fpResetBtn.hidden = true;
+          message.textContent = "Fingerprint lama sudah dihapus dari perangkat ini. Masuk dengan password untuk mendaftar ulang.";
+          message.className = "auth-message";
         });
       }
 
