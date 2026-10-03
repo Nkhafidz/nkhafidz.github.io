@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agenda Mingguan — NotesMe</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='22' fill='%230f172a'/%3E%3Cpath d='M27 25h42v8H27zm0 17h42v8H27zm0 17h30v8H27z' fill='%23f8fafc'/%3E%3Ccircle cx='70' cy='66' r='9' fill='%23f59e0b'/%3E%3C/svg%3E" />
+  <script src="../auth.js"></script>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    .ag-wrap { display: grid; gap: 1.25rem; }
+    .ag-panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; }
+    .ag-panel h2 { margin: 0 0 .75rem; font-size: 1.15rem; }
+    .ag-week { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; }
+    .ag-week strong { font-size: 1.05rem; }
+    .ag-week .ag-nav { display: flex; gap: .5rem; }
+    .ag-btn { border: 1px solid var(--line); background: var(--card-strong); color: var(--text); border-radius: 12px; padding: .55rem .9rem; font: inherit; cursor: pointer; }
+    .ag-btn:hover, .ag-btn:focus-visible { border-color: var(--primary); outline: none; }
+    .ag-btn.main { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 600; }
+    .ag-btn:disabled { opacity: .55; cursor: wait; }
+
+    /* Strip hari: elemen utama halaman — jumlah tugas tersisa per hari */
+    .ag-days { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: .4rem; margin-top: 1rem; }
+    .ag-day { border: 1px solid var(--line); background: transparent; color: var(--text); border-radius: 14px; padding: .5rem .2rem; text-align: center; cursor: pointer; font: inherit; }
+    .ag-day span { display: block; font-size: .75rem; color: var(--muted); }
+    .ag-day b { display: block; font-size: 1.3rem; line-height: 1.2; }
+    .ag-day.today { border-color: var(--accent); }
+    .ag-day.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .ag-day.active span { color: rgba(255,255,255,.85); }
+
+    .ag-form { display: grid; gap: .75rem; grid-template-columns: 1fr 1fr; }
+    .ag-form .full { grid-column: 1 / -1; }
+    .ag-form label { display: grid; gap: .3rem; font-size: .85rem; color: var(--muted); }
+    .ag-form input, .ag-form select { width: 100%; font: inherit; color: var(--text); background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: .65rem .75rem; }
+    .ag-form input:focus, .ag-form select:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+    .ag-group { border-left: 4px solid var(--c, var(--primary)); padding-left: .9rem; margin-top: 1.1rem; }
+    .ag-group h3 { margin: 0 0 .4rem; font-size: 1rem; display: flex; justify-content: space-between; }
+    .ag-group h3 small { color: var(--muted); font-weight: 400; }
+    .ag-item { display: flex; align-items: flex-start; gap: .65rem; padding: .55rem 0; border-bottom: 1px solid var(--line); }
+    .ag-item:last-child { border-bottom: 0; }
+    .ag-item input { margin-top: .3rem; width: 1.15rem; height: 1.15rem; accent-color: var(--primary); flex: none; }
+    .ag-item .txt { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+    .ag-item .meta { display: block; font-size: .8rem; color: var(--muted); }
+    .ag-item.done .tugas { text-decoration: line-through; color: var(--muted); }
+    .ag-item .pent { color: var(--danger); font-weight: 600; }
+    .ag-del { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 1.1rem; padding: 0 .25rem; }
+    .ag-del:hover, .ag-del:focus-visible { color: var(--danger); }
+    .ag-empty, .ag-msg { color: var(--muted); }
+    .ag-msg.err { color: var(--danger); }
+    .ag-setup summary { cursor: pointer; color: var(--muted); }
+    [hidden] { display: none !important; }
+    @media (max-width: 560px) {
+      .ag-form { grid-template-columns: 1fr; }
+      .ag-days { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orb orb-one"></div>
+  <div class="bg-orb orb-two"></div>
+  <div class="bg-grid"></div>
+
+  <header class="site-header inner-header" id="top">
+    <nav class="nav container" aria-label="Navigasi utama">
+      <a class="brand" href="../" aria-label="NotesMe Home">
+        <span class="brand-mark">N</span>
+        <span class="brand-text">NotesMe</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navLinks">☰</button>
+      <div class="nav-links" id="navLinks">
+        <a href="../#menu">Menu</a>
+        <a href="../agenda/" class="active">Agenda</a>
+        <a href="../jadwal/">Jadwal</a>
+        <a href="../personal/">Personal</a>
+        <a href="../mars/">M.A.R.S</a>
+        <a href="../sgh/">SGH</a>
+        <a href="../family/">Family</a>
+        <a href="../rsud/">RSUD</a>
+        <button class="logout-button" type="button" data-logout>Keluar</button>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Ubah tema">☾</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container section">
+    <div class="ag-wrap">
+
+      <!-- Pengaturan koneksi: tampil sampai URL & PIN tersimpan -->
+      <section class="ag-panel" id="setupPanel" hidden>
+        <h2>Hubungkan ke Google Sheet</h2>
+        <p class="ag-msg">Masukkan URL Web App Apps Script dan PIN. Cukup sekali di setiap perangkat.</p>
+        <form class="ag-form" id="setupForm">
+          <label class="full">URL Web App
+            <input id="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" required />
+          </label>
+          <label class="full">PIN
+            <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" required />
+          </label>
+          <div class="full"><button class="ag-btn main" type="submit">Simpan dan muat agenda</button></div>
+        </form>
+        <p class="ag-msg" id="setupMsg"></p>
+      </section>
+
+      <section class="ag-panel" id="weekPanel" hidden>
+        <div class="ag-week">
+          <div>
+            <h1 style="margin:0;font-size:1.5rem">Agenda mingguan</h1>
+            <strong id="weekLabel"></strong>
+          </div>
+          <div class="ag-nav">
+            <button class="ag-btn" type="button" id="prevWeek" aria-label="Minggu sebelumnya">‹</button>
+            <button class="ag-btn" type="button" id="thisWeek">Minggu ini</button>
+            <button class="ag-btn" type="button" id="nextWeek" aria-label="Minggu berikutnya">›</button>
+          </div>
+        </div>
+        <div class="ag-days" id="dayStrip" role="group" aria-label="Saring per hari"></div>
+      </section>
+
+      <section class="ag-panel" id="addPanel" hidden>
+        <h2>Tambah tugas</h2>
+        <form class="ag-form" id="addForm">
+          <label class="full">Tugas
+            <input id="fTugas" maxlength="300" placeholder="Contoh: Revisi SPO transfer pasien" required />
+          </label>
+          <label>Pekerjaan <select id="fPekerjaan"></select></label>
+          <label>Hari <select id="fHari"></select></label>
+          <label>Prioritas
+            <select id="fPrioritas"><option>Biasa</option><option>Penting</option></select>
+          </label>
+          <div style="align-self:end"><button class="ag-btn main" type="submit" id="addBtn">Tambah tugas</button></div>
+        </form>
+        <p class="ag-msg" id="addMsg" aria-live="polite"></p>
+      </section>
+
+      <section class="ag-panel" id="listPanel" hidden>
+        <h2 id="listTitle">Semua tugas</h2>
+        <div id="list"><p class="ag-empty">Memuat…</p></div>
+        <details class="ag-setup" style="margin-top:1.25rem">
+          <summary>Pengaturan koneksi</summary>
+          <p><button class="ag-btn" type="button" id="resetSetup">Ganti URL atau PIN</button></p>
+        </details>
+      </section>
+    </div>
+  </main>
+
+  <script src="../script.js"></script>
+  <script>
+  (() => {
+    "use strict";
+    const DEFAULT_API = ""; // bisa diisi URL Web App agar tidak perlu diketik di tiap perangkat
+    const K_API = "notesme_agenda_api", K_PIN = "notesme_agenda_pin";
+
+    const PEKERJAAN = [
+      ["RANAP", "#38bdf8"], ["IGD Sedayu", "#fb7185"], ["Casemix & BPJS", "#a78bfa"],
+      ["PAP Akreditasi", "#34d399"], ["Familia Medika", "#f59e0b"], ["Tesis", "#f472b6"], ["Lainnya", "#94a3b8"]
+    ];
+    const HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu", "Kapan saja"];
+    const SINGKAT = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min", "Bebas"];
+
+    const $ = id => document.getElementById(id);
+    const store = {
+      get: k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } },
+      set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
+      del: k => { try { localStorage.removeItem(k); } catch {} }
+    };
+    const esc = t => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    function iso(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    }
+    function mondayOf(d) {
+      const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+      return x;
+    }
+    const fmt = d => d.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+
+    let week = mondayOf(new Date());
+    let items = [];
+    let dayFilter = "Semua";
+
+    $("fPekerjaan").innerHTML = PEKERJAAN.map(([p]) => `<option>${p}</option>`).join("");
+    $("fHari").innerHTML = HARI.map(h => `<option>${h}</option>`).join("");
+
+    async function api(action, data = {}) {
+      const url = store.get(K_API) || DEFAULT_API;
+      const res = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({ action, pin: store.get(K_PIN), ...data })
+      });
+      const out = await res.json();
+      if (!out.ok) throw new Error(out.error || "Permintaan gagal.");
+      return out;
+    }
+
+    function showMain(on) {
+      $("setupPanel").hidden = on;
+      ["weekPanel", "addPanel", "listPanel"].forEach(id => $(id).hidden = !on);
+    }
+
+    function isThisWeek() { return iso(week) === iso(mondayOf(new Date())); }
+    function todayName() { return HARI[(new Date().getDay() + 6) % 7]; }
+
+    function renderWeek() {
+      const end = new Date(week); end.setDate(end.getDate() + 6);
+      $("weekLabel").textContent = `${fmt(week)} – ${fmt(end)} ${end.getFullYear()}`;
+      const open = items.filter(i => i.status !== "selesai");
+      $("dayStrip").innerHTML = HARI.map((h, idx) => {
+        const n = open.filter(i => i.hari === h).length;
+        const cls = ["ag-day", dayFilter === h ? "active" : "", isThisWeek() && h === todayName() ? "today" : ""].join(" ");
+        return `<button type="button" class="${cls}" data-day="${h}" aria-pressed="${dayFilter === h}"><span>${SINGKAT[idx]}</span><b>${n}</b></button>`;
+      }).join("");
+      $("dayStrip").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+        dayFilter = dayFilter === b.dataset.day ? "Semua" : b.dataset.day;
+        render();
+      }));
+    }
+
+    function render() {
+      renderWeek();
+      $("listTitle").textContent = dayFilter === "Semua" ? "Semua tugas minggu ini" : `Tugas hari ${dayFilter}`;
+      const data = items.filter(i => dayFilter === "Semua" || i.hari === dayFilter);
+      if (!data.length) {
+        $("list").innerHTML = `<p class="ag-empty">Belum ada tugas${dayFilter === "Semua" ? " minggu ini" : " untuk hari ini"}. Tambahkan lewat form di atas.</p>`;
+        return;
+      }
+      $("list").innerHTML = PEKERJAAN.map(([p, color]) => {
+        const g = data.filter(i => (PEKERJAAN.some(x => x[0] === i.pekerjaan) ? i.pekerjaan : "Lainnya") === p)
+          .sort((a, b) => (a.status === "selesai") - (b.status === "selesai") || HARI.indexOf(a.hari) - HARI.indexOf(b.hari));
+        if (!g.length) return "";
+        const sisa = g.filter(i => i.status !== "selesai").length;
+        return `<div class="ag-group" style="--c:${color}">
+          <h3>${p} <small>${sisa} tersisa</small></h3>
+          ${g.map(i => `
+            <div class="ag-item ${i.status === "selesai" ? "done" : ""}">
+              <input type="checkbox" data-id="${esc(i.id)}" ${i.status === "selesai" ? "checked" : ""} aria-label="Tandai selesai: ${esc(i.tugas)}" />
+              <div class="txt">
+                <span class="tugas">${i.prioritas === "Penting" ? '<span class="pent">Penting · </span>' : ""}${esc(i.tugas)}</span>
+                <span class="meta">${esc(i.hari)}${i.terbawa ? " · terbawa dari minggu lalu" : ""}</span>
+              </div>
+              <button class="ag-del" type="button" data-del="${esc(i.id)}" aria-label="Hapus tugas">×</button>
+            </div>`).join("")}
+        </div>`;
+      }).join("");
+
+      $("list").querySelectorAll("input[data-id]").forEach(cb => cb.addEventListener("change", async () => {
+        cb.disabled = true;
+        try {
+          const { item } = await api("toggle", { id: cb.dataset.id });
+          const t = items.find(i => i.id === item.id);
+          if (t) { t.status = item.status; t.selesai = item.selesai; }
+          render();
+        } catch (e) { cb.checked = !cb.checked; cb.disabled = false; alert(e.message); }
+      }));
+      $("list").querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", async () => {
+        if (!confirm("Hapus tugas ini?")) return;
+        try { await api("delete", { id: b.dataset.del }); items = items.filter(i => i.id !== b.dataset.del); render(); }
+        catch (e) { alert(e.message); }
+      }));
+    }
+
+    async function load() {
+      $("list").innerHTML = '<p class="ag-empty">Memuat…</p>';
+      try {
+        const out = await api("list", { minggu: iso(week) });
+        items = out.items || [];
+        render();
+        return true;
+      } catch (e) {
+        $("list").innerHTML = `<p class="ag-msg err">Gagal memuat: ${esc(e.message)}</p>`;
+        renderWeek();
+        return false;
+      }
+    }
+
+    $("addForm").addEventListener("submit", async ev => {
+      ev.preventDefault();
+      const btn = $("addBtn"); btn.disabled = true; $("addMsg").textContent = "Menyimpan…"; $("addMsg").className = "ag-msg";
+      try {
+        const { item } = await api("add", {
+          minggu: iso(week), tugas: $("fTugas").value, pekerjaan: $("fPekerjaan").value,
+          hari: $("fHari").value, prioritas: $("fPrioritas").value
+        });
+        items.push(item);
+        $("fTugas").value = "";
+        $("addMsg").textContent = "Tugas tersimpan.";
+        render();
+        $("fTugas").focus();
+      } catch (e) { $("addMsg").textContent = e.message; $("addMsg").className = "ag-msg err"; }
+      btn.disabled = false;
+    });
+
+    $("prevWeek").addEventListener("click", () => { week.setDate(week.getDate() - 7); load(); });
+    $("nextWeek").addEventListener("click", () => { week.setDate(week.getDate() + 7); load(); });
+    $("thisWeek").addEventListener("click", () => { week = mondayOf(new Date()); load(); });
+
+    $("setupForm").addEventListener("submit", async ev => {
+      ev.preventDefault();
+      store.set(K_API, $("apiUrl").value.trim());
+      store.set(K_PIN, $("pin").value.trim());
+      $("setupMsg").textContent = "Menghubungkan…"; $("setupMsg").className = "ag-msg";
+      showMain(true);
+      const ok = await load();
+      if (!ok) {
+        showMain(false);
+        $("setupMsg").textContent = "Gagal terhubung. Periksa URL Web App dan PIN.";
+        $("setupMsg").className = "ag-msg err";
+      }
+    });
+    $("resetSetup").addEventListener("click", () => {
+      $("apiUrl").value = store.get(K_API) || DEFAULT_API;
+      store.del(K_PIN); $("pin").value = ""; $("setupMsg").textContent = "";
+      showMain(false);
+    });
+
+    if ((store.get(K_API) || DEFAULT_API) && store.get(K_PIN)) { showMain(true); load(); }
+    else { $("apiUrl").value = store.get(K_API) || DEFAULT_API; showMain(false); }
+  })();
+  </script>
+</body>
+</html>

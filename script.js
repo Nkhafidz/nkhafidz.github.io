@@ -1,5 +1,11 @@
 const categories = [
   {
+    name: "Agenda",
+    href: "agenda/",
+    icon: "✅",
+    description: "Agenda mingguan per pekerjaan, tersimpan di Google Sheet."
+  },
+  {
     name: "Jadwal",
     href: "jadwal/",
     icon: "🗓️",
