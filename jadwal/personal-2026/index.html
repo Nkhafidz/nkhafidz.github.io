@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jadwal Personal 2026 — NotesMe</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='22' fill='%230f172a'/%3E%3Cpath d='M27 25h42v8H27zm0 17h42v8H27zm0 17h30v8H27z' fill='%23f8fafc'/%3E%3Ccircle cx='70' cy='66' r='9' fill='%23f59e0b'/%3E%3C/svg%3E" />
+  <script src="../../auth.js"></script>
+  <link rel="stylesheet" href="../../style.css" />
+  <style>
+    .site-header.inner-header { padding-bottom: 0; }
+    main.section { padding-top: 12px; }
+    :root { --rsud: #38bdf8; --sgh: #fb7185; --klinik: #f59e0b; }
+    .jp { display: grid; gap: 1.25rem; }
+    .jp-panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; }
+    .jp-panel h2 { margin: 0 0 .8rem; font-size: 1.1rem; }
+    .jp-demo { display: inline-block; font-size: .78rem; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: .1rem .6rem; margin-left: .4rem; vertical-align: middle; }
+
+    /* Hari ini & besok */
+    .jp-top { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.25rem; }
+    .jp-date { font-size: 2rem; font-weight: 700; line-height: 1.1; margin: 0; }
+    .jp-sub { color: var(--muted); margin: .2rem 0 1rem; }
+    .jp-shift { display: flex; align-items: center; gap: .75rem; padding: .7rem .85rem; border-radius: 14px; background: var(--card-strong); border-left: 5px solid var(--c); margin-bottom: .5rem; }
+    .jp-shift b { min-width: 4.2rem; }
+    .jp-shift .t { color: var(--muted); font-size: .9rem; margin-left: auto; text-align: right; }
+    .jp-shift.off { border-left-color: var(--line); color: var(--muted); }
+    .jp-info { display: grid; gap: .55rem; margin-top: 1rem; }
+    .jp-info div { display: flex; gap: .6rem; align-items: flex-start; }
+    .jp-info span:first-child { width: 1.4rem; flex: none; }
+    .jp-warn { color: var(--danger); }
+
+    /* Kalender bulan: elemen utama */
+    .jp-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; margin-bottom: .9rem; }
+    .jp-head h2 { margin: 0; }
+    .jp-btn { border: 1px solid var(--line); background: var(--card-strong); color: var(--text); border-radius: 12px; padding: .5rem .85rem; font: inherit; cursor: pointer; }
+    .jp-btn:hover, .jp-btn:focus-visible { border-color: var(--primary); outline: none; }
+    .jp-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .35rem; }
+    .jp-dow { text-align: center; font-size: .78rem; color: var(--muted); padding-bottom: .2rem; }
+    .jp-cell { min-height: 4.6rem; border: 1px solid var(--line); border-radius: 12px; padding: .3rem; background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: .2rem; }
+    .jp-cell:hover, .jp-cell:focus-visible { border-color: var(--primary); outline: none; }
+    .jp-cell.blank { border: 0; cursor: default; }
+    .jp-cell .n { font-size: .82rem; font-weight: 600; display: flex; justify-content: space-between; }
+    .jp-cell.today { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+    .jp-cell.sel { background: var(--card-strong); border-color: var(--primary); }
+    .jp-cell.sun .n { color: var(--danger); }
+    .jp-bar { display: block; font-size: .68rem; line-height: 1.35; border-radius: 6px; padding: 0 .3rem; color: #0b1120; font-weight: 600; background: var(--c); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .jp-dot { width: .45rem; height: .45rem; border-radius: 50%; background: var(--danger); display: inline-block; }
+    .jp-legend { display: flex; flex-wrap: wrap; gap: .9rem; margin-top: .9rem; font-size: .85rem; color: var(--muted); }
+    .jp-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 4px; background: var(--c); margin-right: .35rem; vertical-align: -1px; }
+
+    /* Ringkasan */
+    .jp-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; }
+    .jp-stat { border: 1px solid var(--line); border-radius: 14px; padding: .75rem; border-top: 4px solid var(--c, var(--line)); }
+    .jp-stat b { display: block; font-size: clamp(1.1rem, 4.6vw, 1.5rem); line-height: 1.2; }
+    .jp-stat span { font-size: .82rem; color: var(--muted); }
+    .jp-list { margin: 0; padding: 0; list-style: none; }
+    .jp-list li { display: flex; gap: .8rem; padding: .6rem 0; border-bottom: 1px solid var(--line); }
+    .jp-list li:last-child { border-bottom: 0; }
+    .jp-list .d { min-width: 3.4rem; color: var(--muted); font-size: .9rem; }
+    .jp-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+
+    @media (max-width: 760px) {
+      .jp-top { grid-template-columns: 1fr; }
+      .jp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 480px) {
+      .jp-cell { min-height: 3.6rem; padding: .2rem; }
+      .jp-bar { font-size: 0; height: .4rem; padding: 0; }
+      .jp-date { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orb orb-one"></div>
+  <div class="bg-orb orb-two"></div>
+  <div class="bg-grid"></div>
+
+  <header class="site-header inner-header" id="top">
+    <nav class="nav container" aria-label="Navigasi utama">
+      <a class="brand" href="../../" aria-label="NotesMe Home">
+        <span class="brand-mark">N</span>
+        <span class="brand-text">NotesMe</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navLinks">☰</button>
+      <div class="nav-links" id="navLinks">
+        <a href="../../#menu">Menu</a>
+        <a href="../../agenda/">Agenda</a>
+        <a href="../" class="active">Jadwal</a>
+        <a href="../../personal/">Personal</a>
+        <a href="../../mars/">M.A.R.S</a>
+        <a href="../../sgh/">SGH</a>
+        <a href="../../family/">Family</a>
+        <a href="../../rsud/">RSUD</a>
+        <button class="logout-button" type="button" data-logout>Keluar</button>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Ubah tema">☾</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container section">
+    <div class="jp">
+      <div class="jp-top">
+        <section class="jp-panel" aria-labelledby="dayTitle">
+          <p class="jp-sub" style="margin:0 0 .2rem" id="dayKicker">Hari ini</p>
+          <p class="jp-date" id="dayTitle"></p>
+          <p class="jp-sub" id="daySub"></p>
+          <div id="dayShifts"></div>
+          <div class="jp-info" id="dayInfo"></div>
+        </section>
+
+        <section class="jp-panel" aria-labelledby="nextTitle">
+          <h2 id="nextTitle">Besok</h2>
+          <div id="nextShifts"></div>
+          <div class="jp-info" id="nextInfo"></div>
+        </section>
+      </div>
+
+      <section class="jp-panel" aria-labelledby="calTitle">
+        <div class="jp-head">
+          <h2 id="calTitle"></h2>
+          <div class="jp-actions">
+            <button class="jp-btn" type="button" id="prevM" aria-label="Bulan sebelumnya">‹</button>
+            <button class="jp-btn" type="button" id="nowM">Bulan ini</button>
+            <button class="jp-btn" type="button" id="nextM" aria-label="Bulan berikutnya">›</button>
+          </div>
+        </div>
+        <div class="jp-cal" id="cal"></div>
+        <div class="jp-legend">
+          <span><i style="--c:var(--rsud)"></i>RSUD</span>
+          <span><i style="--c:var(--sgh)"></i>RS SGH</span>
+          <span><i style="--c:var(--klinik)"></i>Klinik</span>
+          <span><span class="jp-dot"></span> Bentrok / istirahat kurang</span>
+        </div>
+      </section>
+
+      <section class="jp-panel" aria-labelledby="sumTitle">
+        <h2 id="sumTitle">Ringkasan bulan ini</h2>
+        <div class="jp-stats" id="stats"></div>
+      </section>
+
+      <section class="jp-panel" aria-labelledby="evTitle">
+        <h2 id="evTitle">Event dan reminder bulan ini</h2>
+        <ul class="jp-list" id="events"></ul>
+      </section>
+
+      <section class="jp-panel">
+        <p class="jp-sub" style="margin-top:0">Tampilan ini memakai data contoh<span class="jp-demo">Mockup</span>. Jadwal tetap diedit di Google Sheet.</p>
+        <div class="jp-actions">
+          <a class="btn primary" href="https://docs.google.com/spreadsheets/d/1GRUME13F4RFFmlEFo_7rqjjVXtG_B7Lltg16xcehduw/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Edit di Google Sheet</a>
+          <a class="btn secondary" href="../">Kembali ke Jadwal</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="../../script.js"></script>
+  <script>
+  (() => {
+    "use strict";
+    const PLACES = {
+      RSUD:   { label: "RSUD",   color: "var(--rsud)" },
+      SGH:    { label: "RS SGH", color: "var(--sgh)" },
+      KLINIK: { label: "Klinik", color: "var(--klinik)" }
+    };
+    const SHIFT = {
+      P: { name: "Pagi",  time: "07.00–14.00", start: 7,  hours: 7 },
+      S: { name: "Siang", time: "14.00–21.00", start: 14, hours: 7 },
+      M: { name: "Malam", time: "21.00–07.00", start: 21, hours: 10 },
+      K: { name: "Visit", time: "16.00–19.00", start: 16, hours: 3 }
+    };
+    const SERAGAM = ["Batik", "Putih", "Seragam dinas", "Putih", "Batik", "Bebas rapi", "Bebas"]; // Senin..Minggu (contoh)
+    const HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+    const DOW = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+    const $ = id => document.getElementById(id);
+    const key = d => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+
+    /* ---------- data contoh (nanti diganti data dari Google Sheet) ---------- */
+    function demoMonth(y, m) {
+      const days = new Date(y, m + 1, 0).getDate();
+      const map = {};
+      const rsudPola = ["P", "P", "S", "S", "M", "M", null, null];
+      for (let d = 1; d <= days; d++) {
+        const dt = new Date(y, m, d), list = [];
+        const r = rsudPola[(d + m * 3) % rsudPola.length];
+        if (r) list.push({ place: "RSUD", code: r });
+        if ([2, 4].includes(dt.getDay()) && r !== "M") list.push({ place: "SGH", code: r === "P" ? "S" : "P" });
+        if (dt.getDay() === 6 && d % 2 === 0) list.push({ place: "SGH", code: "M" });
+        if ([1, 3, 5].includes(dt.getDay()) && !list.some(s => s.code === "S")) list.push({ place: "KLINIK", code: "K" });
+        map[d] = list;
+      }
+      const events = [
+        { d: 6,  icon: "🎓", text: "Kuliah MARS – kelas daring" },
+        { d: 9,  icon: "🏥", text: "Rapat koordinasi IGD SGH" },
+        { d: 14, icon: "⏰", text: "Batas pengumpulan berkas klaim BPJS" },
+        { d: 20, icon: "📋", text: "Pertemuan tim PAP akreditasi" },
+        { d: 27, icon: "🎓", text: "Bimbingan tesis" }
+      ].filter(e => e.d <= days);
+      return { shifts: map, events };
+    }
+
+    /* ---------- deteksi bentrok: shift tumpang tindih atau jeda < 8 jam ---------- */
+    function conflicts(y, m, data) {
+      const out = {};
+      const days = new Date(y, m + 1, 0).getDate();
+      const prevM = demoMonth(y, m - 1 < 0 ? 11 : m - 1);
+      for (let d = 1; d <= days; d++) {
+        const today = data.shifts[d] || [];
+        const yesterday = d > 1 ? data.shifts[d - 1] || [] : prevM.shifts[new Date(y, m, 0).getDate()] || [];
+        const notes = [];
+        const ranges = today.map(s => ({ s: SHIFT[s.code].start, e: SHIFT[s.code].start + SHIFT[s.code].hours, p: s.place }));
+        ranges.sort((a, b) => a.s - b.s);
+        for (let i = 1; i < ranges.length; i++) {
+          const gap = ranges[i].s - ranges[i - 1].e;
+          if (gap < 0) notes.push(`Bentrok ${PLACES[ranges[i - 1].p].label} dan ${PLACES[ranges[i].p].label}`);
+        }
+        const malamKemarin = yesterday.some(s => s.code === "M");
+        if (malamKemarin && today.some(s => s.code === "P")) notes.push("Shift pagi setelah jaga malam (istirahat 0 jam)");
+        if (notes.length) out[d] = notes;
+      }
+      return out;
+    }
+
+    const now = new Date();
+    let view = new Date(now.getFullYear(), now.getMonth(), 1);
+    let selected = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    function getMonth(y, m) {
+      const data = demoMonth(y, m);
+      return { ...data, conf: conflicts(y, m, data) };
+    }
+
+    function shiftRows(list) {
+      if (!list.length) return `<div class="jp-shift off"><b>Libur</b><span class="t">Tidak ada shift</span></div>`;
+      return list.slice().sort((a, b) => SHIFT[a.code].start - SHIFT[b.code].start).map(s => `
+        <div class="jp-shift" style="--c:${PLACES[s.place].color}">
+          <b>${PLACES[s.place].label}</b><span>${SHIFT[s.code].name}</span><span class="t">${SHIFT[s.code].time}</span>
+        </div>`).join("");
+    }
+
+    function infoRows(date, data) {
+      const d = date.getDate();
+      const list = data.shifts[d] || [];
+      const rows = [];
+      rows.push(`<div><span>👔</span><span>${list.length ? SERAGAM[(date.getDay() + 6) % 7] : "Tidak perlu seragam"}</span></div>`);
+      data.events.filter(e => e.d === d).forEach(e => rows.push(`<div><span>${e.icon}</span><span>${e.text}</span></div>`));
+      (data.conf[d] || []).forEach(t => rows.push(`<div class="jp-warn"><span>⚠️</span><span>${t}</span></div>`));
+      return rows.join("");
+    }
+
+    function fmtLong(d) { return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }); }
+
+    function renderDay() {
+      const data = getMonth(selected.getFullYear(), selected.getMonth());
+      const isToday = key(selected) === key(now);
+      $("dayKicker").textContent = isToday ? "Hari ini" : "Tanggal dipilih";
+      $("dayTitle").textContent = HARI[selected.getDay()];
+      $("daySub").textContent = fmtLong(selected);
+      $("dayShifts").innerHTML = shiftRows(data.shifts[selected.getDate()] || []);
+      $("dayInfo").innerHTML = infoRows(selected, data);
+
+      const nx = new Date(selected); nx.setDate(nx.getDate() + 1);
+      const nd = getMonth(nx.getFullYear(), nx.getMonth());
+      $("nextTitle").textContent = isToday ? `Besok, ${HARI[nx.getDay()]} ${nx.getDate()}` : `${HARI[nx.getDay()]}, ${nx.getDate()}`;
+      $("nextShifts").innerHTML = shiftRows(nd.shifts[nx.getDate()] || []);
+      $("nextInfo").innerHTML = infoRows(nx, nd);
+    }
+
+    function renderMonth() {
+      const y = view.getFullYear(), m = view.getMonth();
+      const data = getMonth(y, m);
+      const days = new Date(y, m + 1, 0).getDate();
+      const lead = (new Date(y, m, 1).getDay() + 6) % 7;
+      $("calTitle").textContent = view.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+
+      let html = DOW.map(d => `<div class="jp-dow">${d}</div>`).join("");
+      for (let i = 0; i < lead; i++) html += `<div class="jp-cell blank" aria-hidden="true"></div>`;
+      for (let d = 1; d <= days; d++) {
+        const dt = new Date(y, m, d);
+        const list = (data.shifts[d] || []).slice().sort((a, b) => SHIFT[a.code].start - SHIFT[b.code].start);
+        const cls = ["jp-cell", dt.getDay() === 0 ? "sun" : "", key(dt) === key(now) ? "today" : "", key(dt) === key(selected) ? "sel" : ""].join(" ");
+        const label = list.length ? list.map(s => `${PLACES[s.place].label} ${SHIFT[s.code].name}`).join(", ") : "Libur";
+        html += `<button type="button" class="${cls}" data-d="${d}" aria-label="${d} ${label}${data.conf[d] ? ", ada bentrok" : ""}">
+          <span class="n">${d}${data.conf[d] ? '<span class="jp-dot" aria-hidden="true"></span>' : ""}</span>
+          ${list.map(s => `<span class="jp-bar" style="--c:${PLACES[s.place].color}">${s.place === "KLINIK" ? "Klinik" : s.place} ${s.code}</span>`).join("")}
+        </button>`;
+      }
+      $("cal").innerHTML = html;
+      $("cal").querySelectorAll("button[data-d]").forEach(b => b.addEventListener("click", () => {
+        selected = new Date(y, m, +b.dataset.d);
+        renderMonth(); renderDay();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }));
+
+      // ringkasan
+      const count = { RSUD: 0, SGH: 0, KLINIK: 0 };
+      let hours = 0, off = 0;
+      for (let d = 1; d <= days; d++) {
+        const list = data.shifts[d] || [];
+        if (!list.length) off++;
+        list.forEach(s => { count[s.place]++; hours += SHIFT[s.code].hours; });
+      }
+      const st = [
+        ["RSUD", count.RSUD + " shift", "var(--rsud)"],
+        ["RS SGH", count.SGH + " shift", "var(--sgh)"],
+        ["Klinik", count.KLINIK + " kunjungan", "var(--klinik)"],
+        ["Total jam kerja", hours + " jam", "var(--primary)"],
+        ["Hari libur", off + " hari", "var(--line)"],
+        ["Bentrok / istirahat kurang", Object.keys(data.conf).length + " hari", "var(--danger)"]
+      ];
+      $("stats").innerHTML = st.map(([l, v, c]) => `<div class="jp-stat" style="--c:${c}"><b>${v}</b><span>${l}</span></div>`).join("");
+
+      $("events").innerHTML = data.events.length
+        ? data.events.map(e => `<li><span class="d">${e.d} ${view.toLocaleDateString("id-ID", { month: "short" })}</span><span>${e.icon} ${e.text}</span></li>`).join("")
+        : `<li><span class="d">—</span><span>Tidak ada event bulan ini.</span></li>`;
+    }
+
+    $("prevM").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); renderMonth(); });
+    $("nextM").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); renderMonth(); });
+    $("nowM").addEventListener("click", () => {
+      view = new Date(now.getFullYear(), now.getMonth(), 1);
+      selected = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      renderMonth(); renderDay();
+    });
+
+    renderMonth();
+    renderDay();
+  })();
+  </script>
+</body>
+</html>

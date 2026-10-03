@@ -70,6 +70,13 @@ const links = [
     description: "Jadwal personal tahun 2026."
   },
   {
+    label: "Jadwal Personal 2026 (Tampilan Web)",
+    category: "Jadwal",
+    section: "Personal",
+    url: "/jadwal/personal-2026/",
+    description: "Kalender shift RSUD, SGH, dan Klinik dalam tampilan web."
+  },
+  {
     label: "Jadwal Dokter Umum RSUD",
     category: "Jadwal",
     section: "RSUD",
