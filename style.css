@@ -939,8 +939,13 @@ a {
 /* Hero tanpa kartu ringkasan */
 .hero.no-card { grid-template-columns: minmax(0, 1fr); }
 
-/* Bagian atas halaman kategori yang ringkas: ikon + tombol kembali */
-.page-top { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; padding-top: 28px; }
-.page-top .profile-badge { width: 82px; height: 82px; border-radius: 26px; font-size: 1.55rem; }
-.site-header.inner-header:has(.page-top) { padding-bottom: 8px; }
-.site-header.inner-header:has(.page-top) + main .section:first-child { padding-top: 36px; }
+/* Header halaman kategori: tautan kembali kecil + ikon & judul satu baris */
+.page-top { padding-top: 20px; display: grid; gap: 18px; }
+.back-link { justify-self: start; display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 600; color: var(--muted); text-decoration: none; padding: 6px 12px 6px 8px; border-radius: 999px; transition: color .2s, background .2s; }
+.back-link:hover, .back-link:focus-visible { color: var(--text); background: var(--card); outline: none; }
+.page-title { display: flex; align-items: center; gap: 16px; }
+.page-title .profile-badge { width: 64px; height: 64px; border-radius: 20px; font-size: 1.2rem; flex: none; }
+.page-title h1 { margin: 0; font-size: clamp(1.9rem, 7vw, 2.6rem); line-height: 1.05; letter-spacing: -0.04em; }
+.page-title p { margin: 4px 0 0; color: var(--muted); font-size: 0.95rem; }
+.site-header.inner-header { padding-bottom: 0; }
+.section.page-body { padding-top: 24px; }
