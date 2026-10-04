@@ -685,7 +685,7 @@ function renderChips() {
   });
 }
 
-function cardTemplate(link) {
+function cardTemplate(link, compact = false) {
   const disabled = isDisabled(link);
   const safeUrl = disabled ? "javascript:void(0)" : link.url;
   const sensitive = link.sensitive ? `<span class="sensitive-tag">Sensitif</span>` : "";
@@ -697,11 +697,13 @@ function cardTemplate(link) {
   return `
     <article class="link-card${web ? " has-web" : ""}"${webAttrs}>
       <div>
-        <div class="link-meta">
+        ${compact
+          ? (sensitive ? `<div class="link-meta">${sensitive}</div>` : "")
+          : `<div class="link-meta">
           <span class="tag">${link.category}</span>
           <span class="tag">${link.section}</span>
           ${sensitive}
-        </div>
+        </div>`}
         <h3>${link.label}</h3>
         <p>${link.description || ""}</p>
       </div>
@@ -743,7 +745,7 @@ function renderGroupedSections() {
       <div class="group-card">
         <h3>${section}</h3>
         <div class="group-grid">
-          ${sectionLinks.map(cardTemplate).join("")}
+          ${sectionLinks.map(link => cardTemplate(link, true)).join("")}
         </div>
       </div>
     `).join("");
