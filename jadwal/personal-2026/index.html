@@ -21,9 +21,9 @@
     .jp-top { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.25rem; }
     .jp-date { font-size: 2rem; font-weight: 700; line-height: 1.1; margin: 0; }
     .jp-sub { color: var(--muted); margin: .2rem 0 1rem; }
-    .jp-shift { display: flex; align-items: center; gap: .75rem; padding: .7rem .85rem; border-radius: 14px; background: var(--card-strong); border-left: 5px solid var(--c); margin-bottom: .5rem; }
-    .jp-shift b { min-width: 4.2rem; }
-    .jp-shift .t { color: var(--muted); font-size: .9rem; margin-left: auto; text-align: right; }
+    .jp-shift { display: grid; grid-template-columns: auto 1fr; column-gap: .75rem; row-gap: .15rem; align-items: baseline; padding: .65rem .85rem; border-radius: 14px; background: var(--card-strong); border-left: 5px solid var(--c); margin-bottom: .5rem; }
+    .jp-shift .t { color: var(--muted); font-size: .9rem; text-align: right; white-space: nowrap; }
+    .jp-shift .nm { grid-column: 1 / -1; font-size: .92rem; }
     .jp-shift.off { border-left-color: var(--line); color: var(--muted); }
     .jp-info { display: grid; gap: .55rem; margin-top: 1rem; }
     .jp-info div { display: flex; gap: .6rem; align-items: flex-start; }
@@ -60,6 +60,19 @@
     .jp-list .d { min-width: 3.4rem; color: var(--muted); font-size: .9rem; }
     .jp-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
 
+    .jp-form { display: grid; gap: .75rem; }
+    .jp-form label { display: grid; gap: .3rem; font-size: .85rem; color: var(--muted); }
+    .jp-form input { width: 100%; font: inherit; color: var(--text); background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: .65rem .75rem; }
+    .jp-form input:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+    .jp-msg { color: var(--muted); margin: 0; }
+    .jp-msg:empty { display: none; }
+    .jp-msg.err { color: var(--danger); }
+    .jp-note { color: var(--muted); font-size: .85rem; }
+    .jp-amber { color: var(--accent); }
+    .jp-cell.hol .n { color: var(--danger); }
+    .jp-legend .ev, .jp-cell .ev { width: .45rem; height: .45rem; border-radius: 50%; background: var(--primary); display: inline-block; margin-left: 2px; }
+    .jp-gl { display: block; font-size: .78rem; color: var(--accent); }
+    [hidden] { display: none !important; }
     @media (max-width: 760px) {
       .jp-top { grid-template-columns: 1fr; }
       .jp-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -99,6 +112,19 @@
 
   <main class="container section">
     <div class="jp">
+      <section class="jp-panel" id="setupPanel" hidden>
+        <h2>Hubungkan jadwal</h2>
+        <p class="jp-note" style="margin-top:0">Masukkan URL Web App dan PIN. Cukup sekali di setiap perangkat.</p>
+        <form class="jp-form" id="setupForm">
+          <label>URL Web App<input id="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" required /></label>
+          <label>PIN<input id="pin" type="password" inputmode="numeric" autocomplete="current-password" required /></label>
+          <div><button class="btn primary" type="submit">Buka jadwal</button></div>
+        </form>
+        <p class="jp-msg" id="setupMsg" aria-live="polite"></p>
+      </section>
+
+      <div class="jp" id="mainArea" hidden>
+      <p class="jp-msg" id="loadMsg" aria-live="polite"></p>
       <div class="jp-top">
         <section class="jp-panel" aria-labelledby="dayTitle">
           <p class="jp-sub" style="margin:0 0 .2rem" id="dayKicker">Hari ini</p>
@@ -129,7 +155,8 @@
           <span><i style="--c:var(--rsud)"></i>RSUD</span>
           <span><i style="--c:var(--sgh)"></i>RS SGH</span>
           <span><i style="--c:var(--klinik)"></i>Klinik</span>
-          <span><span class="jp-dot"></span> Bentrok / istirahat kurang</span>
+          <span><span class="jp-dot"></span> Bentrok / istirahat kritis</span>
+          <span><span class="ev"></span> Event</span>
         </div>
       </section>
 
@@ -144,12 +171,13 @@
       </section>
 
       <section class="jp-panel">
-        <p class="jp-sub" style="margin-top:0">Tampilan ini memakai data contoh<span class="jp-demo">Mockup</span>. Jadwal tetap diedit di Google Sheet.</p>
         <div class="jp-actions">
           <a class="btn primary" href="https://docs.google.com/spreadsheets/d/1GRUME13F4RFFmlEFo_7rqjjVXtG_B7Lltg16xcehduw/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Edit di Google Sheet</a>
           <a class="btn secondary" href="../">Kembali ke Jadwal</a>
+          <button class="jp-btn" type="button" id="resetSetup">Ganti URL / PIN</button>
         </div>
       </section>
+      </div>
     </div>
   </main>
 
@@ -157,131 +185,203 @@
   <script>
   (() => {
     "use strict";
+    const DEFAULT_API = "";
+    const K_API = "notesme_jadwal_api", K_PIN = "notesme_jadwal_pin";
     const PLACES = {
       RSUD:   { label: "RSUD",   color: "var(--rsud)" },
       SGH:    { label: "RS SGH", color: "var(--sgh)" },
       KLINIK: { label: "Klinik", color: "var(--klinik)" }
     };
-    const SHIFT = {
-      P: { name: "Pagi",  time: "07.00–14.00", start: 7,  hours: 7 },
-      S: { name: "Siang", time: "14.00–21.00", start: 14, hours: 7 },
-      M: { name: "Malam", time: "21.00–07.00", start: 21, hours: 10 },
-      K: { name: "Visit", time: "16.00–19.00", start: 16, hours: 3 }
-    };
-    const SERAGAM = ["Batik", "Putih", "Seragam dinas", "Putih", "Batik", "Bebas rapi", "Bebas"]; // Senin..Minggu (contoh)
+    const ORDER = ["RSUD", "SGH", "KLINIK"];
     const HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
     const DOW = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+    const OFF = { CT: "Cuti tahunan", X: "Libur / istirahat" };
     const $ = id => document.getElementById(id);
+    const esc = t => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const store = {
+      get: k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } },
+      set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
+      del: k => { try { localStorage.removeItem(k); } catch {} }
+    };
     const key = d => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    const mkey = (y, m) => `${y}-${m}`;
 
-    /* ---------- data contoh (nanti diganti data dari Google Sheet) ---------- */
-    function demoMonth(y, m) {
-      const days = new Date(y, m + 1, 0).getDate();
-      const map = {};
-      const rsudPola = ["P", "P", "S", "S", "M", "M", null, null];
-      for (let d = 1; d <= days; d++) {
-        const dt = new Date(y, m, d), list = [];
-        const r = rsudPola[(d + m * 3) % rsudPola.length];
-        if (r) list.push({ place: "RSUD", code: r });
-        if ([2, 4].includes(dt.getDay()) && r !== "M") list.push({ place: "SGH", code: r === "P" ? "S" : "P" });
-        if (dt.getDay() === 6 && d % 2 === 0) list.push({ place: "SGH", code: "M" });
-        if ([1, 3, 5].includes(dt.getDay()) && !list.some(s => s.code === "S")) list.push({ place: "KLINIK", code: "K" });
-        map[d] = list;
-      }
-      const events = [
-        { d: 6,  icon: "🎓", text: "Kuliah MARS – kelas daring" },
-        { d: 9,  icon: "🏥", text: "Rapat koordinasi IGD SGH" },
-        { d: 14, icon: "⏰", text: "Batas pengumpulan berkas klaim BPJS" },
-        { d: 20, icon: "📋", text: "Pertemuan tim PAP akreditasi" },
-        { d: 27, icon: "🎓", text: "Bimbingan tesis" }
-      ].filter(e => e.d <= days);
-      return { shifts: map, events };
-    }
-
-    /* ---------- deteksi bentrok: shift tumpang tindih atau jeda < 8 jam ---------- */
-    function conflicts(y, m, data) {
-      const out = {};
-      const days = new Date(y, m + 1, 0).getDate();
-      const prevM = demoMonth(y, m - 1 < 0 ? 11 : m - 1);
-      for (let d = 1; d <= days; d++) {
-        const today = data.shifts[d] || [];
-        const yesterday = d > 1 ? data.shifts[d - 1] || [] : prevM.shifts[new Date(y, m, 0).getDate()] || [];
-        const notes = [];
-        const ranges = today.map(s => ({ s: SHIFT[s.code].start, e: SHIFT[s.code].start + SHIFT[s.code].hours, p: s.place }));
-        ranges.sort((a, b) => a.s - b.s);
-        for (let i = 1; i < ranges.length; i++) {
-          const gap = ranges[i].s - ranges[i - 1].e;
-          if (gap < 0) notes.push(`Bentrok ${PLACES[ranges[i - 1].p].label} dan ${PLACES[ranges[i].p].label}`);
-        }
-        const malamKemarin = yesterday.some(s => s.code === "M");
-        if (malamKemarin && today.some(s => s.code === "P")) notes.push("Shift pagi setelah jaga malam (istirahat 0 jam)");
-        if (notes.length) out[d] = notes;
-      }
+    /* ---------- akses data ---------- */
+    const cache = {};
+    async function api(payload) {
+      const res = await fetch(store.get(K_API) || DEFAULT_API, {
+        method: "POST",
+        body: JSON.stringify({ pin: store.get(K_PIN), ...payload })
+      });
+      const out = await res.json();
+      if (!out.ok) throw new Error(out.error || "Permintaan gagal.");
       return out;
     }
+    async function getMonth(y, m) {           // m: 0-11
+      const k = mkey(y, m);
+      if (!cache[k]) cache[k] = api({ action: "month", year: y, month: m + 1 }).then(prepare).catch(e => { delete cache[k]; throw e; });
+      return cache[k];
+    }
 
+    /* ---------- tafsir kode shift (mengikuti catatan di Master_Shift) ---------- */
+    function toMin(t) {
+      const m = String(t || "").match(/(\d{1,2})[:.](\d{2})/);
+      if (!m) return null;
+      return (+m[1]) * 60 + (+m[2]) + (/\(\s*\+1\s*\)/.test(t) ? 1440 : 0);
+    }
+    function segs(ms) {
+      const out = [];
+      [[ms.masuk, ms.pulang], [ms.masuk2, ms.pulang2]].forEach(([a, b]) => {
+        let s = toMin(a), e = toMin(b);
+        if (s == null || e == null) return;
+        if (e <= s) e += 1440;
+        out.push({ s, e });
+      });
+      return out;
+    }
+    function jam(ms) {
+      const parts = [[ms.masuk, ms.pulang], [ms.masuk2, ms.pulang2]].filter(([a, b]) => a && b)
+        .map(([a, b]) => `${a.replace(/\s*\(\+1\)/, "")}–${b.replace(/\s*\(\+1\)/, "")}${/\+1/.test(b) ? " (+1)" : ""}`);
+      return parts.join(" & ");
+    }
+
+    function prepare(data) {
+      const byPlace = { RSUD: {}, SGH: {}, KLINIK: {} };
+      (data.master || []).forEach(r => { if (byPlace[r.tempat]) byPlace[r.tempat][r.kode] = r; });
+
+      function parse(place, raw) {
+        raw = String(raw || "").trim();
+        if (!raw) return null;
+        const gl = /\(\s*GL\s*\)/i.test(raw);
+        const base = raw.replace(/\(.*?\)/g, " ").trim().split(/\s+/)[0];
+        const codes = byPlace[place] || {};
+        let parts = codes[base] ? [codes[base]] : null;
+        if (!parts) {   // kode gabungan yang belum terdaftar, mis. "PiSb" -> Pi + Sb
+          for (let i = 1; i < base.length; i++) {
+            if (codes[base.slice(0, i)] && codes[base.slice(i)]) { parts = [codes[base.slice(0, i)], codes[base.slice(i)]]; break; }
+          }
+        }
+        const off = OFF[base.toUpperCase()] && !parts?.some(p => p.masuk) ? OFF[base.toUpperCase()] : null;
+        return {
+          place, raw, base, gl, off,
+          known: !!parts,
+          nama: parts ? parts.map(p => p.nama).join(" + ") : "",
+          jam: parts ? parts.map(jam).filter(Boolean).join(" & ") : "",
+          segs: parts && !off ? parts.flatMap(segs) : []
+        };
+      }
+
+      const days = data.days || 0;
+      const shifts = {}, lain = {};
+      for (let d = 1; d <= days; d++) {
+        shifts[d] = ORDER.map(p => parse(p, (data.rows[p] || [])[d - 1])).filter(Boolean)
+          .sort((a, b) => (a.segs[0]?.s ?? 9999) - (b.segs[0]?.s ?? 9999));
+        const l = (data.rows.LAIN || [])[d - 1];
+        if (l) lain[d] = l;
+      }
+      const prev = ORDER.map(p => parse(p, (data.prevLast || {})[p])).filter(Boolean);
+
+      // bentrok & istirahat: shift (GL dihitung istirahat; CT/X diabaikan)
+      const st = data.setting || {};
+      const tol = st.toleransi ?? 60, crit = (st.ambang ?? 2) * 60, minRest = (st.minIstirahat ?? 8) * 60;
+      const work = list => list.filter(s => !s.gl && !s.off);
+      const conf = {}, rest = {};
+      for (let d = 1; d <= days; d++) {
+        const before = d === 1 ? prev : shifts[d - 1];
+        const iv = [
+          ...work(before).flatMap(s => s.segs.map(g => ({ s: g.s - 1440, e: g.e - 1440, p: s.place, today: false }))),
+          ...work(shifts[d]).flatMap(s => s.segs.map(g => ({ ...g, p: s.place, today: true })))
+        ].sort((a, b) => a.s - b.s);
+        const notes = [], soft = [];
+        for (let i = 1; i < iv.length; i++) {
+          if (!iv[i].today) continue;
+          const a = iv[i - 1], b = iv[i];
+          const gap = b.s - a.e;
+          if (gap < 0 && -gap > tol) notes.push(`Bentrok ${PLACES[a.p].label} dan ${PLACES[b.p].label} (${Math.round(-gap / 60 * 10) / 10} jam tumpang tindih)`);
+          else if (gap >= 0 && gap < crit) notes.push(`Istirahat kritis: hanya ${fmtGap(gap)} sebelum ${PLACES[b.p].label}`);
+          else if (gap >= 0 && gap < minRest) soft.push(`Istirahat ${fmtGap(gap)} sebelum ${PLACES[b.p].label} (minimal ${minRest / 60} jam)`);
+        }
+        if (notes.length) conf[d] = notes;
+        if (soft.length) rest[d] = soft;
+      }
+      const evByDay = {};
+      (data.events || []).forEach(e => { (evByDay[e.d] = evByDay[e.d] || []).push(e); });
+      const hol = {};
+      (data.holidays || []).forEach(h => { hol[h.d] = h.nama; });
+      return { ...data, shifts, lain, conf, rest, evByDay, hol };
+    }
+    function fmtGap(min) {
+      const h = Math.floor(min / 60), m = min % 60;
+      return h ? `${h} jam${m ? " " + m + " mnt" : ""}` : `${m} menit`;
+    }
+
+    /* ---------- tampilan ---------- */
     const now = new Date();
     let view = new Date(now.getFullYear(), now.getMonth(), 1);
     let selected = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    function getMonth(y, m) {
-      const data = demoMonth(y, m);
-      return { ...data, conf: conflicts(y, m, data) };
-    }
-
     function shiftRows(list) {
       if (!list.length) return `<div class="jp-shift off"><b>Libur</b><span class="t">Tidak ada shift</span></div>`;
-      return list.slice().sort((a, b) => SHIFT[a.code].start - SHIFT[b.code].start).map(s => `
-        <div class="jp-shift" style="--c:${PLACES[s.place].color}">
-          <b>${PLACES[s.place].label}</b><span>${SHIFT[s.code].name}</span><span class="t">${SHIFT[s.code].time}</span>
-        </div>`).join("");
+      return list.map(s => {
+        const name = s.off || (s.known ? s.nama : `Kode "${esc(s.raw)}" belum ada di Master_Shift`);
+        const gl = s.gl ? `<span class="jp-gl">Ganti Libur, tetap absen</span>` : "";
+        return `<div class="jp-shift${s.off ? " off" : ""}" style="--c:${PLACES[s.place].color}">
+          <b>${PLACES[s.place].label}</b><span class="t">${esc(s.off ? "" : s.jam)}</span><span class="nm">${esc(name)}${gl}</span>
+        </div>`;
+      }).join("");
     }
 
     function infoRows(date, data) {
-      const d = date.getDate();
-      const list = data.shifts[d] || [];
-      const rows = [];
-      rows.push(`<div><span>👔</span><span>${list.length ? SERAGAM[(date.getDay() + 6) % 7] : "Tidak perlu seragam"}</span></div>`);
-      data.events.filter(e => e.d === d).forEach(e => rows.push(`<div><span>${e.icon}</span><span>${e.text}</span></div>`));
-      (data.conf[d] || []).forEach(t => rows.push(`<div class="jp-warn"><span>⚠️</span><span>${t}</span></div>`));
+      const d = date.getDate(), rows = [];
+      if (!data.adaTab) return `<div class="jp-note"><span>ℹ️</span><span>Tab bulan ini belum ada di sheet.</span></div>`;
+      if (data.hol[d]) rows.push(`<div class="jp-warn"><span>🎌</span><span>${esc(data.hol[d])}</span></div>`);
+      const nama = HARI[date.getDay()];
+      const sr = data.seragam?.[nama] || {};
+      const kerja = (data.shifts[d] || []).filter(s => !s.off);
+      const places = [...new Set(kerja.map(s => s.place))];
+      if (places.length) {
+        rows.push(`<div><span>👔</span><span>${places.map(p => `${PLACES[p].label}: ${esc(sr[p] || "-")}`).join(" · ")}</span></div>`);
+      }
+      (data.evByDay[d] || []).forEach(e => rows.push(`<div><span>📌</span><span>${esc(e.judul)}${e.mulai ? ` · ${esc(e.mulai)}${e.selesai ? "–" + esc(e.selesai) : ""}` : ""}${e.lokasi ? ` · ${esc(e.lokasi)}` : ""}</span></div>`));
+      if (data.lain[d]) rows.push(`<div><span>📝</span><span>${esc(data.lain[d])}</span></div>`);
+      (data.conf[d] || []).forEach(t => rows.push(`<div class="jp-warn"><span>⚠️</span><span>${esc(t)}</span></div>`));
+      (data.rest[d] || []).forEach(t => rows.push(`<div class="jp-amber"><span>⏳</span><span>${esc(t)}</span></div>`));
       return rows.join("");
     }
 
-    function fmtLong(d) { return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }); }
+    const fmtLong = d => d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
 
-    function renderDay() {
-      const data = getMonth(selected.getFullYear(), selected.getMonth());
+    async function renderDay() {
       const isToday = key(selected) === key(now);
+      const nx = new Date(selected); nx.setDate(nx.getDate() + 1);
+      const [data, nd] = await Promise.all([getMonth(selected.getFullYear(), selected.getMonth()), getMonth(nx.getFullYear(), nx.getMonth())]);
       $("dayKicker").textContent = isToday ? "Hari ini" : "Tanggal dipilih";
       $("dayTitle").textContent = HARI[selected.getDay()];
       $("daySub").textContent = fmtLong(selected);
       $("dayShifts").innerHTML = shiftRows(data.shifts[selected.getDate()] || []);
       $("dayInfo").innerHTML = infoRows(selected, data);
-
-      const nx = new Date(selected); nx.setDate(nx.getDate() + 1);
-      const nd = getMonth(nx.getFullYear(), nx.getMonth());
       $("nextTitle").textContent = isToday ? `Besok, ${HARI[nx.getDay()]} ${nx.getDate()}` : `${HARI[nx.getDay()]}, ${nx.getDate()}`;
       $("nextShifts").innerHTML = shiftRows(nd.shifts[nx.getDate()] || []);
       $("nextInfo").innerHTML = infoRows(nx, nd);
     }
 
-    function renderMonth() {
+    async function renderMonth() {
       const y = view.getFullYear(), m = view.getMonth();
-      const data = getMonth(y, m);
+      $("calTitle").textContent = view.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+      const data = await getMonth(y, m);
       const days = new Date(y, m + 1, 0).getDate();
       const lead = (new Date(y, m, 1).getDay() + 6) % 7;
-      $("calTitle").textContent = view.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
-
       let html = DOW.map(d => `<div class="jp-dow">${d}</div>`).join("");
       for (let i = 0; i < lead; i++) html += `<div class="jp-cell blank" aria-hidden="true"></div>`;
       for (let d = 1; d <= days; d++) {
         const dt = new Date(y, m, d);
-        const list = (data.shifts[d] || []).slice().sort((a, b) => SHIFT[a.code].start - SHIFT[b.code].start);
-        const cls = ["jp-cell", dt.getDay() === 0 ? "sun" : "", key(dt) === key(now) ? "today" : "", key(dt) === key(selected) ? "sel" : ""].join(" ");
-        const label = list.length ? list.map(s => `${PLACES[s.place].label} ${SHIFT[s.code].name}`).join(", ") : "Libur";
-        html += `<button type="button" class="${cls}" data-d="${d}" aria-label="${d} ${label}${data.conf[d] ? ", ada bentrok" : ""}">
-          <span class="n">${d}${data.conf[d] ? '<span class="jp-dot" aria-hidden="true"></span>' : ""}</span>
-          ${list.map(s => `<span class="jp-bar" style="--c:${PLACES[s.place].color}">${s.place === "KLINIK" ? "Klinik" : s.place} ${s.code}</span>`).join("")}
+        const list = data.shifts[d] || [];
+        const cls = ["jp-cell", dt.getDay() === 0 ? "sun" : "", data.hol[d] ? "hol" : "", key(dt) === key(now) ? "today" : "", key(dt) === key(selected) ? "sel" : ""].join(" ");
+        const label = list.length ? list.map(s => `${PLACES[s.place].label} ${s.off || s.nama || s.raw}`).join(", ") : "Libur";
+        const marks = (data.conf[d] ? '<span class="jp-dot" aria-hidden="true"></span>' : "") + (data.evByDay[d] ? '<span class="ev" aria-hidden="true"></span>' : "");
+        html += `<button type="button" class="${cls}" data-d="${d}" aria-label="${d}: ${esc(label)}${data.conf[d] ? ", ada peringatan" : ""}">
+          <span class="n">${d}<span>${marks}</span></span>
+          ${list.map(s => `<span class="jp-bar" style="--c:${s.off ? "var(--line)" : PLACES[s.place].color}${s.gl ? ";opacity:.55" : ""}">${esc(s.raw)}</span>`).join("")}
         </button>`;
       }
       $("cal").innerHTML = html;
@@ -291,39 +391,87 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       }));
 
-      // ringkasan
       const count = { RSUD: 0, SGH: 0, KLINIK: 0 };
-      let hours = 0, off = 0;
+      let minutes = 0, off = 0, cuti = 0;
       for (let d = 1; d <= days; d++) {
         const list = data.shifts[d] || [];
-        if (!list.length) off++;
-        list.forEach(s => { count[s.place]++; hours += SHIFT[s.code].hours; });
+        const kerja = list.filter(s => !s.off && !s.gl);
+        if (!kerja.length) off++;
+        list.forEach(s => { if (s.off === OFF.CT) cuti++; });
+        kerja.forEach(s => { count[s.place]++; minutes += s.segs.reduce((t, g) => t + (g.e - g.s), 0); });
       }
       const st = [
         ["RSUD", count.RSUD + " shift", "var(--rsud)"],
         ["RS SGH", count.SGH + " shift", "var(--sgh)"],
-        ["Klinik", count.KLINIK + " kunjungan", "var(--klinik)"],
-        ["Total jam kerja", hours + " jam", "var(--primary)"],
-        ["Hari libur", off + " hari", "var(--line)"],
-        ["Bentrok / istirahat kurang", Object.keys(data.conf).length + " hari", "var(--danger)"]
+        ["Klinik", count.KLINIK + " shift", "var(--klinik)"],
+        ["Total jam kerja", Math.round(minutes / 60) + " jam", "var(--primary)"],
+        ["Hari tanpa shift", off + " hari" + (cuti ? ` (${cuti} cuti)` : ""), "var(--line)"],
+        ["Bentrok / istirahat kritis", Object.keys(data.conf).length + " hari", "var(--danger)"]
       ];
       $("stats").innerHTML = st.map(([l, v, c]) => `<div class="jp-stat" style="--c:${c}"><b>${v}</b><span>${l}</span></div>`).join("");
 
-      $("events").innerHTML = data.events.length
-        ? data.events.map(e => `<li><span class="d">${e.d} ${view.toLocaleDateString("id-ID", { month: "short" })}</span><span>${e.icon} ${e.text}</span></li>`).join("")
+      const mon = view.toLocaleDateString("id-ID", { month: "short" });
+      const evs = [
+        ...Object.entries(data.hol).map(([d, n]) => ({ d: +d, t: `🎌 ${esc(n)}` })),
+        ...(data.events || []).map(e => ({ d: e.d, t: `📌 ${esc(e.judul)}${e.mulai ? ` · ${esc(e.mulai)}` : ""}` })),
+        ...Object.entries(data.lain).map(([d, t]) => ({ d: +d, t: `📝 ${esc(t)}` }))
+      ].sort((a, b) => a.d - b.d);
+      $("events").innerHTML = evs.length
+        ? evs.map(e => `<li><span class="d">${e.d} ${mon}</span><span>${e.t}</span></li>`).join("")
         : `<li><span class="d">—</span><span>Tidak ada event bulan ini.</span></li>`;
     }
 
-    $("prevM").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); renderMonth(); });
-    $("nextM").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); renderMonth(); });
+    async function refresh() {
+      $("loadMsg").textContent = "Memuat jadwal…"; $("loadMsg").className = "jp-msg";
+      try {
+        await Promise.all([renderMonth(), renderDay()]);
+        $("loadMsg").textContent = "";
+        return true;
+      } catch (e) {
+        $("loadMsg").textContent = "Gagal memuat: " + e.message; $("loadMsg").className = "jp-msg err";
+        return false;
+      }
+    }
+
+    function showMain(on) {
+      $("setupPanel").hidden = on;
+      $("mainArea").hidden = !on;
+    }
+
+    $("prevM").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); refreshMonth(); });
+    $("nextM").addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); refreshMonth(); });
     $("nowM").addEventListener("click", () => {
       view = new Date(now.getFullYear(), now.getMonth(), 1);
       selected = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      renderMonth(); renderDay();
+      refresh();
+    });
+    async function refreshMonth() {
+      try { await renderMonth(); $("loadMsg").textContent = ""; }
+      catch (e) { $("loadMsg").textContent = "Gagal memuat: " + e.message; $("loadMsg").className = "jp-msg err"; }
+    }
+
+    $("setupForm").addEventListener("submit", async ev => {
+      ev.preventDefault();
+      store.set(K_API, $("apiUrl").value.trim());
+      store.set(K_PIN, $("pin").value.trim());
+      Object.keys(cache).forEach(k => delete cache[k]);
+      $("setupMsg").textContent = "Menghubungkan…"; $("setupMsg").className = "jp-msg";
+      showMain(true);
+      if (!(await refresh())) {
+        showMain(false);
+        $("setupMsg").textContent = "Gagal terhubung. Periksa URL Web App dan PIN.";
+        $("setupMsg").className = "jp-msg err";
+      }
+    });
+    $("resetSetup").addEventListener("click", () => {
+      $("apiUrl").value = store.get(K_API) || DEFAULT_API;
+      store.del(K_PIN); $("pin").value = ""; $("setupMsg").textContent = "";
+      showMain(false);
+      window.scrollTo({ top: 0 });
     });
 
-    renderMonth();
-    renderDay();
+    if ((store.get(K_API) || DEFAULT_API) && store.get(K_PIN)) { showMain(true); refresh(); }
+    else { $("apiUrl").value = store.get(K_API) || DEFAULT_API; showMain(false); }
   })();
   </script>
 </body>
