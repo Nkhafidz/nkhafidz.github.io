@@ -935,3 +935,6 @@ a {
 /* Kartu dengan tampilan web */
 .link-card.has-web { cursor: pointer; }
 .link-card .web-hint { display: block; flex-basis: 100%; margin-top: 6px; font-size: 0.8rem; color: var(--muted); }
+
+/* Hero tanpa kartu ringkasan */
+.hero.no-card { grid-template-columns: minmax(0, 1fr); }
