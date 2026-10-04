@@ -938,3 +938,9 @@ a {
 
 /* Hero tanpa kartu ringkasan */
 .hero.no-card { grid-template-columns: minmax(0, 1fr); }
+
+/* Bagian atas halaman kategori yang ringkas: ikon + tombol kembali */
+.page-top { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; padding-top: 28px; }
+.page-top .profile-badge { width: 82px; height: 82px; border-radius: 26px; font-size: 1.55rem; }
+.site-header.inner-header:has(.page-top) { padding-bottom: 8px; }
+.site-header.inner-header:has(.page-top) + main .section:first-child { padding-top: 36px; }
