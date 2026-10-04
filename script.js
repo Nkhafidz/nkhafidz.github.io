@@ -56,25 +56,19 @@ const categories = [
 const links = [
   // JADWAL
   {
-    label: "Jadwal Personal 2025",
+    label: "2025",
     category: "Jadwal",
     section: "Personal",
     url: "https://docs.google.com/spreadsheets/d/1-RITojeYcoU5uZKfiFn9Ch38VE_zLTkai27WLvFr-MQ/edit?usp=sharing",
     description: "Jadwal personal tahun 2025."
   },
   {
-    label: "Jadwal Personal 2026",
+    label: "2026",
     category: "Jadwal",
     section: "Personal",
     url: "https://docs.google.com/spreadsheets/d/1GRUME13F4RFFmlEFo_7rqjjVXtG_B7Lltg16xcehduw/edit?usp=sharing",
+    webUrl: "/jadwal/personal-2026/",
     description: "Jadwal personal tahun 2026."
-  },
-  {
-    label: "Jadwal Personal 2026 (Tampilan Web)",
-    category: "Jadwal",
-    section: "Personal",
-    url: "/jadwal/personal-2026/",
-    description: "Kalender shift RSUD, SGH, dan Klinik dalam tampilan web."
   },
   {
     label: "Jadwal Dokter Umum RSUD",
@@ -697,8 +691,11 @@ function cardTemplate(link) {
   const sensitive = link.sensitive ? `<span class="sensitive-tag">Sensitif</span>` : "";
   const actionClass = disabled ? "open-link disabled" : "open-link";
   const actionText = disabled ? "Isi URL dulu" : "Buka link";
+  const web = link.webUrl && !disabled;
+  const webAttrs = web ? ` data-web="${link.webUrl}" tabindex="0" role="link" aria-label="${link.label}: buka tampilan web"` : "";
+  const webHint = web ? `<span class="web-hint">Ketuk kartu untuk tampilan web</span>` : "";
   return `
-    <article class="link-card">
+    <article class="link-card${web ? " has-web" : ""}"${webAttrs}>
       <div>
         <div class="link-meta">
           <span class="tag">${link.category}</span>
@@ -710,6 +707,7 @@ function cardTemplate(link) {
       </div>
       <div class="link-footer">
         <a class="${actionClass}" href="${safeUrl}"${disabled ? " aria-disabled=\"true\"" : externalTarget(link.url)}>${actionText}</a>
+        ${webHint}
       </div>
     </article>
   `;
@@ -807,3 +805,18 @@ renderChips();
 renderLinks();
 renderGroupedSections();
 renderPageLogo();
+
+
+/* Kartu dengan dua tindakan: "Buka link" ke Google Sheet, area kartu lain ke tampilan web */
+document.addEventListener("click", event => {
+  const card = event.target.closest(".link-card[data-web]");
+  if (!card || event.target.closest("a")) return;
+  window.location.href = card.dataset.web;
+});
+document.addEventListener("keydown", event => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const card = event.target.closest && event.target.closest(".link-card[data-web]");
+  if (!card || event.target !== card) return;
+  event.preventDefault();
+  window.location.href = card.dataset.web;
+});
