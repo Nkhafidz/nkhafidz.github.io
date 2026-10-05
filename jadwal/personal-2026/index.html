@@ -84,6 +84,11 @@
     .jp-codes { font-size: .8rem; color: var(--muted); margin-top: .5rem; }
     .jp-codes summary { cursor: pointer; }
     .jp-codes p { margin: .35rem 0 0; }
+    .jp-legend .ab, .jp-cell .ab { width: .45rem; height: .45rem; border-radius: 50%; border: 2px solid var(--accent); display: inline-block; margin-left: 2px; box-sizing: border-box; }
+    .jp-absen { display: grid; grid-template-columns: auto 1fr; column-gap: .75rem; padding: .5rem .85rem; border-radius: 14px; border: 1px dashed var(--c); margin-bottom: .5rem; font-size: .92rem; }
+    .jp-absen .t { color: var(--muted); text-align: right; white-space: nowrap; }
+    .jp-absen .nm { grid-column: 1 / -1; color: var(--muted); font-size: .85rem; }
+    .jp-absen .beda { color: var(--accent); }
     [hidden] { display: none !important; }
     @media (max-width: 760px) {
       .jp-top { grid-template-columns: 1fr; }
@@ -169,14 +174,15 @@
           <span><i style="--c:var(--klinik)"></i>Klinik</span>
           <span><span class="jp-dot"></span> Bentrok / istirahat kritis</span>
           <span><span class="ev"></span> Event</span>
+          <span><span class="ab"></span> Absen berbeda dari shift</span>
         </div>
       </section>
 
       <section class="jp-panel jp-edit" aria-labelledby="editTitle">
         <h2 id="editTitle">Ubah jadwal</h2>
         <label for="eText" style="position:absolute;left:-9999px">Perubahan jadwal</label>
-        <textarea id="eText" placeholder="Satu baris satu perubahan, contoh:&#10;rsud pi 12&#10;sgh m 15-17&#10;rsud mb 20, 22 gl&#10;klinik s besok&#10;rsud libur 25"></textarea>
-        <p class="jp-note" style="margin:.45rem 0 0">Tulis tempat (rsud, sgh, klinik), kode shift, dan tanggal di bulan yang sedang ditampilkan (<b id="editMonth"></b>). Gunakan <b>libur</b> atau <b>hapus</b> untuk mengosongkan, dan <b>gl</b> untuk Ganti Libur.</p>
+        <textarea id="eText" placeholder="Satu baris satu perubahan, contoh:&#10;rsud pi 12&#10;sgh m 15-17&#10;rsud mb 20, 22 gl&#10;klinik s besok&#10;rsud libur 25&#10;absen rsud pi 12"></textarea>
+        <p class="jp-note" style="margin:.45rem 0 0">Tulis tempat (rsud, sgh, klinik), kode shift, dan tanggal di bulan yang sedang ditampilkan (<b id="editMonth"></b>). Gunakan <b>libur</b> atau <b>hapus</b> untuk mengosongkan, <b>gl</b> untuk Ganti Libur, dan awali dengan <b>absen</b> (misalnya <i>absen rsud pi 12</i>) untuk mengisi baris Absen.</p>
         <details class="jp-codes"><summary>Lihat daftar kode</summary><div id="codeList"></div></details>
         <ul class="jp-prev" id="ePreview" aria-live="polite"></ul>
         <div class="jp-actions" style="margin-top:.75rem;align-items:center">
@@ -319,6 +325,19 @@
       }
       const prev = ORDER.map(p => parse(p, (data.prevLast || {})[p])).filter(Boolean);
 
+      // baris Absen: kode mengikuti Master_Shift tempat yang sama; ditandai bila berbeda dari shift
+      const absen = {};
+      for (let d = 1; d <= days; d++) {
+        const list = [["ABSEN_RSUD", "RSUD"], ["ABSEN_SGH", "SGH"]].map(([row, place]) => {
+          const a = parse(place, (data.rows[row] || [])[d - 1]);
+          if (!a) return null;
+          const sh = (shifts[d] || []).find(s => s.place === place);
+          a.row = row; a.beda = !sh || sh.base.toLowerCase() !== a.base.toLowerCase();
+          return a;
+        }).filter(Boolean);
+        if (list.length) absen[d] = list;
+      }
+
       // bentrok & istirahat: shift (GL dihitung istirahat; CT/X diabaikan)
       const st = data.setting || {};
       const tol = st.toleransi ?? 60, crit = (st.ambang ?? 2) * 60, minRest = (st.minIstirahat ?? 8) * 60;
@@ -346,7 +365,7 @@
       (data.events || []).forEach(e => { (evByDay[e.d] = evByDay[e.d] || []).push(e); });
       const hol = {};
       (data.holidays || []).forEach(h => { hol[h.d] = h.nama; });
-      return { ...data, shifts, lain, conf, rest, evByDay, hol };
+      return { ...data, shifts, lain, conf, rest, evByDay, hol, absen };
     }
     function fmtGap(min) {
       const h = Math.floor(min / 60), m = min % 60;
@@ -380,6 +399,7 @@
       if (places.length) {
         rows.push(`<div><span>👔</span><span>${places.map(p => `${PLACES[p].label}: ${esc(sr[p] || "-")}`).join(" · ")}</span></div>`);
       }
+      (data.absen[d] || []).forEach(a => rows.push(`<div class="${a.beda ? "jp-amber" : ""}"><span>🕘</span><span>Absen ${PLACES[a.place].label}: ${esc(a.known ? a.nama : a.raw)}${a.jam ? " · " + esc(a.jam) : ""}${a.beda ? " (berbeda dari shift)" : ""}</span></div>`));
       (data.evByDay[d] || []).forEach(e => rows.push(`<div><span>📌</span><span>${esc(e.judul)}${e.mulai ? ` · ${esc(e.mulai)}${e.selesai ? "–" + esc(e.selesai) : ""}` : ""}${e.lokasi ? ` · ${esc(e.lokasi)}` : ""}</span></div>`));
       if (data.lain[d]) rows.push(`<div><span>📝</span><span>${esc(data.lain[d])}</span></div>`);
       (data.conf[d] || []).forEach(t => rows.push(`<div class="jp-warn"><span>⚠️</span><span>${esc(t)}</span></div>`));
@@ -418,7 +438,7 @@
         const list = data.shifts[d] || [];
         const cls = ["jp-cell", dt.getDay() === 0 ? "sun" : "", data.hol[d] ? "hol" : "", key(dt) === key(now) ? "today" : "", key(dt) === key(selected) ? "sel" : ""].join(" ");
         const label = list.length ? list.map(s => `${PLACES[s.place].label} ${s.off || s.nama || s.raw}`).join(", ") : "Libur";
-        const marks = (data.conf[d] ? '<span class="jp-dot" aria-hidden="true"></span>' : "") + (data.evByDay[d] ? '<span class="ev" aria-hidden="true"></span>' : "");
+        const marks = (data.conf[d] ? '<span class="jp-dot" aria-hidden="true"></span>' : "") + (data.evByDay[d] ? '<span class="ev" aria-hidden="true"></span>' : "") + ((data.absen[d] || []).some(a => a.beda) ? '<span class="ab" aria-hidden="true"></span>' : "");
         html += `<button type="button" class="${cls}" data-d="${d}" aria-label="${d}: ${esc(label)}${data.conf[d] ? ", ada peringatan" : ""}">
           <span class="n">${d}<span>${marks}</span></span>
           ${list.map(s => `<span class="jp-bar" style="--c:${s.off ? "var(--line)" : PLACES[s.place].color}${s.gl ? ";opacity:.55" : ""}">${esc(s.raw)}</span>`).join("")}
@@ -498,9 +518,16 @@
       const out = { raw: line.trim(), place: null, code: null, clear: false, gl: false, days: [], err: "" };
       let t = " " + line.toLowerCase().replace(/[,;]/g, " ") + " ";
       if (!t.trim()) return null;
+      const isAbsen = /\sabsen\s/.test(t);
+      if (isAbsen) t = t.replace(/\sabsen\s/, " ");
       for (const [w, p] of PLACE_WORD) {
         const re = new RegExp(`\\s${w.replace(" ", "\\s+")}\\s`);
         if (re.test(t)) { out.place = p; t = t.replace(re, " "); break; }
+      }
+      out.base = out.place;
+      if (isAbsen && out.place) {
+        if (out.place === "KLINIK") out.err = "Klinik tidak punya baris absen";
+        else out.place = "ABSEN_" + out.place;
       }
       if (/\s\(?gl\)?\s/.test(t)) { out.gl = true; t = t.replace(/\s\(?gl\)?\s/g, " "); }
       const last = new Date(y, m + 1, 0).getDate();
@@ -527,12 +554,13 @@
         out.code = w;
       }
       if (!out.place) out.err = "Tempat belum ditulis (rsud, sgh, atau klinik)";
+      else if (out.err) { /* sudah ada pesan */ }
       else if (!out.days.length) out.err = out.err || "Tanggal belum ditulis";
       else if (!out.clear && !out.code) out.err = "Kode shift belum ditulis";
       else if (!out.clear) {
-        const hit = codesOf(data, out.place).find(r => r.kode.toLowerCase() === out.code.toLowerCase());
+        const hit = codesOf(data, out.base).find(r => r.kode.toLowerCase() === out.code.toLowerCase());
         if (hit) out.code = hit.kode;
-        else out.err = `Kode "${out.code}" tidak ada untuk ${PLACES[out.place].label} di Master_Shift`;
+        else out.err = `Kode "${out.code}" tidak ada untuk ${PLACES[out.base].label} di Master_Shift`;
       }
       if (out.clear) out.code = "";
       else if (out.code && out.gl) out.code += " (GL)";
@@ -564,12 +592,15 @@
         return l.days.map(d => {
           valid++;
           const before = (editData.rows[l.place] || [])[d - 1] || "";
-          const sh = sim.shifts[d].find(s => s.place === l.place);
+          const sh = l.place.startsWith("ABSEN_")
+            ? (sim.absen[d] || []).find(a => a.row === l.place)
+            : sim.shifts[d].find(s => s.place === l.place);
+          const label = (l.place.startsWith("ABSEN_") ? "Absen " : "") + PLACES[l.base].label;
           const nama = l.code ? (sh?.nama || l.code) : "dikosongkan";
           const notes = [...(sim.conf[d] || []).map(t => `<span class="sub bad">⚠️ ${esc(t)}</span>`),
                          ...(sim.rest[d] || []).map(t => `<span class="sub warn">⏳ ${esc(t)}</span>`)].join("");
-          return `<li style="--c:${PLACES[l.place].color}">
-            <span class="top"><span class="chg">${PLACES[l.place].label} · ${d} ${mon}</span><span>${esc(before || "(kosong)")} → <b>${esc(l.code || "(kosong)")}</b></span></span>
+          return `<li style="--c:${PLACES[l.base].color}">
+            <span class="top"><span class="chg">${label} · ${d} ${mon}</span><span>${esc(before || "(kosong)")} → <b>${esc(l.code || "(kosong)")}</b></span></span>
             <span class="sub">${esc(nama)}${sh?.jam ? " · " + esc(sh.jam) : ""}</span>${notes}</li>`;
         }).join("");
       }).join("");
