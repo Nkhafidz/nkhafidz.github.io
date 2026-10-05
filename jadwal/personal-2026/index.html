@@ -89,6 +89,28 @@
     .jp-absen .t { color: var(--muted); text-align: right; white-space: nowrap; }
     .jp-absen .nm { grid-column: 1 / -1; color: var(--muted); font-size: .85rem; }
     .jp-absen .beda { color: var(--accent); }
+    .jp-menu { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: flex; gap: .45rem; overflow-x: auto; padding: .55rem; margin: 0 -.2rem; border-radius: 18px; background: var(--card); border: 1px solid var(--line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); scrollbar-width: none; }
+    .jp-menu::-webkit-scrollbar { display: none; }
+    .jp-tab { flex: none; border: 1px solid var(--line); background: transparent; color: var(--text); border-radius: 999px; padding: .5rem .9rem; font: inherit; font-size: .9rem; cursor: pointer; white-space: nowrap; }
+    .jp-tab:hover, .jp-tab:focus-visible { border-color: var(--primary); outline: none; }
+    .jp-tab[aria-selected="true"] { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 600; }
+    .jp-form select, .jp-form input[type=date], .jp-form input[type=time], .jp-form input[type=text], .jp-form input[type=number] { width: 100%; font: inherit; color: var(--text); background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: .65rem .75rem; }
+    .jp-form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .jp-check { display: flex !important; align-items: center; gap: .5rem; grid-template-columns: none !important; color: var(--text) !important; }
+    .jp-check input { width: 1.15rem !important; height: 1.15rem; padding: 0 !important; flex: none; accent-color: var(--primary); }
+    .jp-days { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
+    .jp-day { width: 100%; display: grid; grid-template-columns: 3.4rem 1fr; gap: .75rem; text-align: left; font: inherit; color: var(--text); background: var(--card-strong); border: 1px solid var(--line); border-radius: 14px; padding: .6rem .7rem; cursor: pointer; }
+    .jp-day:hover, .jp-day:focus-visible { border-color: var(--primary); outline: none; }
+    .jp-day.today { border-color: var(--accent); }
+    .jp-day .dt { text-align: center; line-height: 1.15; }
+    .jp-day .dt b { display: block; font-size: 1.35rem; }
+    .jp-day .dt span { font-size: .75rem; color: var(--muted); }
+    .jp-day .ln { display: block; font-size: .88rem; padding: .05rem 0 .05rem .5rem; border-left: 3px solid var(--c, var(--line)); margin: .15rem 0; }
+    .jp-day .mut { color: var(--muted); }
+    .jp-ev { display: grid; grid-template-columns: 1fr auto; gap: .2rem .75rem; padding: .7rem 0; border-bottom: 1px solid var(--line); }
+    .jp-ev:last-child { border-bottom: 0; }
+    .jp-ev .meta { grid-column: 1; font-size: .85rem; color: var(--muted); }
+    .jp-ev .act { grid-row: 1 / span 2; grid-column: 2; display: flex; gap: .4rem; align-items: center; }
     [hidden] { display: none !important; }
     @media (max-width: 760px) {
       .jp-top { grid-template-columns: 1fr; }
@@ -141,8 +163,16 @@
       </section>
 
       <div class="jp" id="mainArea" hidden>
+      <nav class="jp-menu" role="tablist" aria-label="Menu jadwal">
+        <button class="jp-tab" role="tab" data-tab="today">Hari ini</button>
+        <button class="jp-tab" role="tab" data-tab="d7">7 hari</button>
+        <button class="jp-tab" role="tab" data-tab="d30">30 hari</button>
+        <button class="jp-tab" role="tab" data-tab="cal">Kalender</button>
+        <button class="jp-tab" role="tab" data-tab="shift">Ubah shift</button>
+        <button class="jp-tab" role="tab" data-tab="event">Event</button>
+      </nav>
       <p class="jp-msg" id="loadMsg" aria-live="polite"></p>
-      <div class="jp-top">
+      <div class="jp-top" data-views="today cal">
         <section class="jp-panel" aria-labelledby="dayTitle">
           <p class="jp-sub" style="margin:0 0 .2rem" id="dayKicker">Hari ini</p>
           <p class="jp-date" id="dayTitle"></p>
@@ -158,7 +188,12 @@
         </section>
       </div>
 
-      <section class="jp-panel" aria-labelledby="calTitle">
+      <section class="jp-panel" data-views="list" aria-labelledby="listTitle">
+        <h2 id="listTitle">7 hari ke depan</h2>
+        <ul class="jp-days" id="dayList"></ul>
+      </section>
+
+      <section class="jp-panel" data-views="cal" aria-labelledby="calTitle">
         <div class="jp-head">
           <h2 id="calTitle"></h2>
           <div class="jp-actions">
@@ -178,8 +213,30 @@
         </div>
       </section>
 
-      <section class="jp-panel jp-edit" aria-labelledby="editTitle">
-        <h2 id="editTitle">Ubah jadwal</h2>
+      <section class="jp-panel" data-views="shift" aria-labelledby="gTitle">
+        <h2 id="gTitle">Ubah shift</h2>
+        <form class="jp-form" id="gForm">
+          <div class="row2">
+            <label>Tanggal<input type="date" id="gDate" required /></label>
+            <label>Tempat
+              <select id="gPlace">
+                <option value="RSUD">RSUD</option><option value="SGH">RS SGH</option><option value="KLINIK">Klinik</option>
+                <option value="ABSEN_RSUD">Absen RSUD</option><option value="ABSEN_SGH">Absen SGH</option>
+              </select>
+            </label>
+          </div>
+          <label>Shift<select id="gCode"></select></label>
+          <label class="jp-check"><input type="checkbox" id="gGL" /> Ganti Libur (GL), tetap absen</label>
+          <ul class="jp-prev" id="gInfo" aria-live="polite"></ul>
+          <div class="jp-actions" style="align-items:center">
+            <button class="btn primary" type="submit" id="gSave" disabled>Simpan</button>
+            <span class="jp-msg" id="gMsg" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="jp-panel jp-edit" data-views="shift" aria-labelledby="editTitle">
+        <h2 id="editTitle">Ubah banyak sekaligus</h2>
         <label for="eText" style="position:absolute;left:-9999px">Perubahan jadwal</label>
         <textarea id="eText" placeholder="Satu baris satu perubahan, contoh:&#10;rsud pi 12&#10;sgh m 15-17&#10;rsud mb 20, 22 gl&#10;klinik s besok&#10;rsud libur 25&#10;absen rsud pi 12"></textarea>
         <p class="jp-note" style="margin:.45rem 0 0">Tulis tempat (rsud, sgh, klinik), kode shift, dan tanggal di bulan yang sedang ditampilkan (<b id="editMonth"></b>). Gunakan <b>libur</b> atau <b>hapus</b> untuk mengosongkan, <b>gl</b> untuk Ganti Libur, dan awali dengan <b>absen</b> (misalnya <i>absen rsud pi 12</i>) untuk mengisi baris Absen.</p>
@@ -191,12 +248,38 @@
         </div>
       </section>
 
-      <section class="jp-panel" aria-labelledby="sumTitle">
+      <section class="jp-panel" data-views="event" aria-labelledby="evmTitle">
+        <div class="jp-head"><h2 id="evmTitle">Event</h2><button class="jp-btn" type="button" id="evNew">+ Tambah event</button></div>
+        <form class="jp-form" id="evForm" hidden>
+          <label>Judul<input type="text" id="evJudul" maxlength="120" required placeholder="Contoh: Rapat koordinasi IGD" /></label>
+          <div class="row2">
+            <label>Tanggal<input type="date" id="evTgl" required /></label>
+            <label>Kategori<input type="text" id="evKat" list="evKatList" maxlength="40" placeholder="meeting" /></label>
+          </div>
+          <datalist id="evKatList"><option value="meeting"><option value="workshop"><option value="kuliah"><option value="pribadi"><option value="lainnya"></datalist>
+          <div class="row2">
+            <label>Jam mulai<input type="time" id="evMulai" /></label>
+            <label>Jam selesai<input type="time" id="evSelesai" /></label>
+          </div>
+          <div class="row2">
+            <label>Lokasi<input type="text" id="evLokasi" maxlength="120" /></label>
+            <label>Reminder (menit sebelum)<input type="number" id="evRem" min="0" max="1440" placeholder="bawaan" /></label>
+          </div>
+          <div class="jp-actions" style="align-items:center">
+            <button class="btn primary" type="submit" id="evSave">Simpan event</button>
+            <button class="jp-btn" type="button" id="evCancel">Batal</button>
+            <span class="jp-msg" id="evMsg" aria-live="polite"></span>
+          </div>
+        </form>
+        <div id="evUpcoming"><p class="jp-note">Memuat…</p></div>
+      </section>
+
+      <section class="jp-panel" data-views="cal" aria-labelledby="sumTitle">
         <h2 id="sumTitle">Ringkasan bulan ini</h2>
         <div class="jp-stats" id="stats"></div>
       </section>
 
-      <section class="jp-panel" aria-labelledby="evTitle">
+      <section class="jp-panel" data-views="cal" aria-labelledby="evTitle">
         <h2 id="evTitle">Event dan reminder bulan ini</h2>
         <ul class="jp-list" id="events"></ul>
       </section>
@@ -486,6 +569,7 @@
       try {
         await Promise.all([renderMonth(), renderDay()]);
         $("loadMsg").textContent = "";
+        setTab(currentTab, { keepDate: true });
         return true;
       } catch (e) {
         $("loadMsg").textContent = "Gagal memuat: " + e.message; $("loadMsg").className = "jp-msg err";
@@ -636,6 +720,182 @@
         $("eMsg").className = "jp-msg err"; $("eMsg").textContent = "Gagal menyimpan: " + e.message;
         $("eSave").disabled = false;
       }
+    });
+
+
+    /* ---------- Menu tab (mengikuti menu bot Telegram) ---------- */
+    const K_VIEW = "notesme_jadwal_view";
+    let currentTab = store.get(K_VIEW) || "today";
+    const isoD = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const fromIso = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+    const HARI3 = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+
+    function setTab(tab, opts = {}) {
+      currentTab = tab; store.set(K_VIEW, tab);
+      const view = tab === "d7" || tab === "d30" ? "list" : tab;
+      document.querySelectorAll(".jp-tab").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === tab)));
+      document.querySelectorAll("#mainArea [data-views]").forEach(el => { el.hidden = !el.dataset.views.split(" ").includes(view); });
+      if (tab === "today" && !opts.keepDate) {
+        selected = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        view0();
+      }
+      const job = tab === "d7" ? renderList(7) : tab === "d30" ? renderList(30)
+        : tab === "shift" ? renderGuided() : tab === "event" ? renderEvents()
+        : tab === "today" ? renderDay() : Promise.all([renderMonth(), renderDay()]);
+      Promise.resolve(job).catch(e => { $("loadMsg").className = "jp-msg err"; $("loadMsg").textContent = "Gagal memuat: " + e.message; });
+    }
+    function view0() { view = new Date(selected.getFullYear(), selected.getMonth(), 1); }
+    document.querySelectorAll(".jp-tab").forEach(b => b.addEventListener("click", () => setTab(b.dataset.tab)));
+
+    /* ---------- 7 / 30 hari ke depan ---------- */
+    async function renderList(n) {
+      $("listTitle").textContent = `${n} hari ke depan`;
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const dates = Array.from({ length: n }, (_, i) => { const d = new Date(start); d.setDate(d.getDate() + i); return d; });
+      const months = {};
+      await Promise.all([...new Set(dates.map(d => mkey(d.getFullYear(), d.getMonth())))].map(async k => {
+        const [y, m] = k.split("-").map(Number); months[k] = await getMonth(y, m);
+      }));
+      $("dayList").innerHTML = dates.map((d, i) => {
+        const data = months[mkey(d.getFullYear(), d.getMonth())], dd = d.getDate();
+        const list = data.shifts[dd] || [];
+        const lines = list.length ? list.map(s => `<span class="ln" style="--c:${s.off ? "var(--line)" : PLACES[s.place].color}"><b>${PLACES[s.place].label}</b> · ${esc(s.off || (s.known ? s.nama : s.raw))}${s.jam && !s.off ? " · " + esc(s.jam) : ""}${s.gl ? " · GL" : ""}</span>`).join("")
+          : `<span class="ln mut">Libur</span>`;
+        const abs = (data.absen[dd] || []).filter(a => a.beda).map(a => `<span class="ln jp-amber" style="--c:var(--accent)">🕘 Absen ${PLACES[a.place].label}: ${esc(a.known ? a.nama : a.raw)}${a.jam ? " · " + esc(a.jam) : ""}</span>`).join("");
+        const evs = (data.evByDay[dd] || []).map(e => `<span class="ln" style="--c:var(--primary)">📌 ${esc(e.judul)}${e.mulai ? " · " + esc(e.mulai) : ""}</span>`).join("");
+        const hol = data.hol[dd] ? `<span class="ln jp-warn" style="--c:var(--danger)">🎌 ${esc(data.hol[dd])}</span>` : "";
+        const warn = (data.conf[dd] || []).map(t => `<span class="ln jp-warn" style="--c:var(--danger)">⚠️ ${esc(t)}</span>`).join("");
+        return `<li><button type="button" class="jp-day${i === 0 ? " today" : ""}" data-iso="${isoD(d)}">
+          <span class="dt"><span>${i === 0 ? "Hari ini" : i === 1 ? "Besok" : HARI3[d.getDay()]}</span><b>${dd}</b><span>${d.toLocaleDateString("id-ID", { month: "short" })}</span></span>
+          <span>${hol}${lines}${abs}${evs}${warn}</span></button></li>`;
+      }).join("");
+      $("dayList").querySelectorAll(".jp-day").forEach(b => b.addEventListener("click", () => {
+        selected = fromIso(b.dataset.iso); view0(); setTab("cal", { keepDate: true });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }));
+    }
+
+    /* ---------- Ubah shift (form tuntun, seperti /darurat) ---------- */
+    const baseOf = p => p.replace("ABSEN_", "");
+    async function renderGuided() {
+      if (!$("gDate").value) $("gDate").value = isoD(selected);
+      const d = fromIso($("gDate").value);
+      const data = await getMonth(d.getFullYear(), d.getMonth());
+      const place = $("gPlace").value, base = baseOf(place);
+      const prev = $("gCode").dataset.for === base ? $("gCode").value : null;
+      const opts = codesOf(data, base).map(r => {
+        const off = OFF[r.kode.toUpperCase()] && !r.masuk;
+        const jamTxt = off ? "" : ` (${jam(r)})`;
+        return `<option value="${esc(r.kode)}">${esc(r.kode)} — ${esc(r.nama)}${jamTxt}</option>`;
+      });
+      $("gCode").innerHTML = `<option value="">— Kosongkan —</option>` + opts.join("");
+      $("gCode").dataset.for = base;
+      const current = ((data.rows[place] || [])[d.getDate() - 1] || "").trim();
+      const curBase = current.replace(/\(.*?\)/g, " ").trim().split(/\s+/)[0] || "";
+      if (prev !== null) $("gCode").value = prev;
+      else { $("gCode").value = codesOf(data, base).some(r => r.kode === curBase) ? curBase : ""; $("gGL").checked = /\(\s*GL\s*\)/i.test(current); }
+      guidedPreview(data, d, place, current);
+    }
+    function guidedCode() {
+      const c = $("gCode").value;
+      return c && $("gGL").checked ? c + " (GL)" : c;
+    }
+    function guidedPreview(data, d, place, current) {
+      const code = guidedCode(), dd = d.getDate();
+      const rows = JSON.parse(JSON.stringify(data.rows));
+      rows[place] = rows[place] || []; while (rows[place].length < dd) rows[place].push("");
+      rows[place][dd - 1] = code;
+      const sim = prepare({ ...data, rows });
+      const label = (place.startsWith("ABSEN_") ? "Absen " : "") + PLACES[baseOf(place)].label;
+      const sh = place.startsWith("ABSEN_") ? (sim.absen[dd] || []).find(a => a.row === place) : sim.shifts[dd].find(s => s.place === place);
+      const same = current === code;
+      const notes = [...(sim.conf[dd] || []).map(t => `<span class="sub bad">⚠️ ${esc(t)}</span>`),
+                     ...(sim.rest[dd] || []).map(t => `<span class="sub warn">⏳ ${esc(t)}</span>`)].join("");
+      $("gInfo").innerHTML = `<li style="--c:${PLACES[baseOf(place)].color}">
+        <span class="top"><span class="chg">${label} · ${dd} ${d.toLocaleDateString("id-ID", { month: "short" })}</span><span>${esc(current || "(kosong)")} → <b>${esc(code || "(kosong)")}</b></span></span>
+        <span class="sub">${same ? "Tidak ada perubahan" : esc(code ? (sh?.nama || code) + (sh?.jam ? " · " + sh.jam : "") : "dikosongkan")}</span>${notes}</li>`;
+      $("gSave").disabled = same;
+      $("gSave").dataset.current = current;
+    }
+    ["gDate", "gPlace"].forEach(id => $(id).addEventListener("change", () => { $("gMsg").textContent = ""; $("gCode").dataset.for = ""; renderGuided(); }));
+    ["gCode", "gGL"].forEach(id => $(id).addEventListener("change", async () => {
+      $("gMsg").textContent = "";
+      const d = fromIso($("gDate").value), data = await getMonth(d.getFullYear(), d.getMonth());
+      guidedPreview(data, d, $("gPlace").value, ((data.rows[$("gPlace").value] || [])[d.getDate() - 1] || "").trim());
+    }));
+    $("gForm").addEventListener("submit", async ev => {
+      ev.preventDefault();
+      const d = fromIso($("gDate").value), place = $("gPlace").value;
+      $("gSave").disabled = true; $("gMsg").className = "jp-msg"; $("gMsg").textContent = "Menyimpan…";
+      try {
+        await api({ action: "setShifts", changes: [{ year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(), place, code: guidedCode() }] });
+        forgetMonth(d);
+        $("gCode").dataset.for = "";
+        await renderGuided();
+        $("gMsg").textContent = "Tersimpan dan tercatat di Log.";
+      } catch (e) { $("gMsg").className = "jp-msg err"; $("gMsg").textContent = "Gagal: " + e.message; $("gSave").disabled = false; }
+    });
+    function forgetMonth(d) {
+      const y = d.getFullYear(), m = d.getMonth();
+      delete cache[mkey(y, m)];
+      delete cache[mkey(m === 11 ? y + 1 : y, (m + 1) % 12)];
+    }
+
+    /* ---------- Event: lihat, tambah, ubah, hapus ---------- */
+    let evCache = [];
+    async function renderEvents() {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const ms = [0, 1, 2].map(i => new Date(start.getFullYear(), start.getMonth() + i, 1));
+      const datas = await Promise.all(ms.map(d => getMonth(d.getFullYear(), d.getMonth())));
+      const todayIso = isoD(now);
+      evCache = datas.flatMap((data, i) => (data.events || []).map(e => ({ ...e, iso: isoD(new Date(ms[i].getFullYear(), ms[i].getMonth(), e.d)) })))
+        .filter(e => e.iso >= todayIso).sort((a, b) => (a.iso + (a.mulai || "")).localeCompare(b.iso + (b.mulai || "")));
+      $("evUpcoming").innerHTML = evCache.length ? evCache.map((e, i) => {
+        const d = fromIso(e.iso);
+        return `<div class="jp-ev">
+          <span><b>${esc(e.judul)}</b></span>
+          <span class="meta">${HARI3[d.getDay()]}, ${d.getDate()} ${d.toLocaleDateString("id-ID", { month: "short" })}${e.mulai ? " · " + esc(e.mulai) + (e.selesai ? "–" + esc(e.selesai) : "") : ""}${e.lokasi ? " · " + esc(e.lokasi) : ""}${e.kategori ? " · " + esc(e.kategori) : ""}</span>
+          <span class="act"><button class="jp-btn" type="button" data-edit="${i}">Ubah</button><button class="jp-btn" type="button" data-del="${i}" aria-label="Hapus ${esc(e.judul)}">Hapus</button></span>
+        </div>`;
+      }).join("") : `<p class="jp-note">Tidak ada event dalam 3 bulan ke depan.</p>`;
+      $("evUpcoming").querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => openEvForm(evCache[+b.dataset.edit])));
+      $("evUpcoming").querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", async () => {
+        const e = evCache[+b.dataset.del];
+        if (!confirm(`Hapus event "${e.judul}"?`)) return;
+        try { await api({ action: "deleteEvent", id: e.id }); forgetMonth(fromIso(e.iso)); delete cache[mkey(fromIso(e.iso).getFullYear(), fromIso(e.iso).getMonth())]; await renderEvents(); }
+        catch (err) { alert("Gagal menghapus: " + err.message); }
+      }));
+    }
+    let evEditing = null;
+    function openEvForm(e) {
+      evEditing = e || null;
+      $("evForm").hidden = false; $("evMsg").textContent = "";
+      $("evJudul").value = e?.judul || "";
+      $("evTgl").value = e?.iso || isoD(selected < new Date(now.getFullYear(), now.getMonth(), now.getDate()) ? now : selected);
+      $("evMulai").value = /^\d{2}:\d{2}$/.test(e?.mulai || "") ? e.mulai : "";
+      $("evSelesai").value = /^\d{2}:\d{2}$/.test(e?.selesai || "") ? e.selesai : "";
+      $("evKat").value = e?.kategori || "";
+      $("evLokasi").value = e?.lokasi || "";
+      $("evRem").value = /^\d+$/.test(String(e?.reminder || "")) ? e.reminder : "";
+      $("evSave").textContent = e ? "Simpan perubahan" : "Simpan event";
+      $("evJudul").focus();
+    }
+    $("evNew").addEventListener("click", () => openEvForm(null));
+    $("evCancel").addEventListener("click", () => { $("evForm").hidden = true; evEditing = null; });
+    $("evForm").addEventListener("submit", async ev => {
+      ev.preventDefault();
+      const payload = { judul: $("evJudul").value, tanggal: $("evTgl").value, mulai: $("evMulai").value, selesai: $("evSelesai").value,
+        kategori: $("evKat").value, lokasi: $("evLokasi").value, reminder: $("evRem").value };
+      $("evSave").disabled = true; $("evMsg").className = "jp-msg"; $("evMsg").textContent = "Menyimpan…";
+      try {
+        if (evEditing) await api({ action: "updateEvent", id: evEditing.id, ...payload });
+        else await api({ action: "addEvent", ...payload });
+        [payload.tanggal, evEditing?.iso].filter(Boolean).forEach(t => { const d = fromIso(t); delete cache[mkey(d.getFullYear(), d.getMonth())]; });
+        $("evForm").hidden = true; evEditing = null;
+        await renderEvents();
+        $("evUpcoming").insertAdjacentHTML("afterbegin", `<p class="jp-msg">Event tersimpan dan tercatat di Log.</p>`);
+      } catch (e) { $("evMsg").className = "jp-msg err"; $("evMsg").textContent = "Gagal: " + e.message; }
+      $("evSave").disabled = false;
     });
 
     async function refreshMonth() {
