@@ -53,6 +53,16 @@
     .ag-empty, .ag-msg { color: var(--muted); }
     .ag-msg.err { color: var(--danger); }
     .ag-setup summary { cursor: pointer; color: var(--muted); }
+    .ag-quick textarea { width: 100%; min-height: 6.5rem; resize: vertical; font: inherit; line-height: 1.5; color: var(--text); background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .8rem; }
+    .ag-quick textarea:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+    .ag-hint { font-size: .82rem; color: var(--muted); margin: .45rem 0 0; }
+    .ag-prev { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .4rem; }
+    .ag-prev li { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .5rem; padding: .5rem .65rem; border-radius: 12px; background: var(--card-strong); border-left: 4px solid var(--c); }
+    .ag-prev .t { flex: 1 1 100%; min-width: 0; overflow-wrap: anywhere; }
+    .ag-pill { font-size: .75rem; border: 1px solid var(--line); border-radius: 999px; padding: .05rem .5rem; color: var(--muted); white-space: nowrap; }
+    .ag-pill.pent { color: var(--danger); border-color: var(--danger); }
+    .ag-quick-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-top: .75rem; }
+    .ag-details summary { cursor: pointer; font-weight: 600; }
     [hidden] { display: none !important; }
     @media (max-width: 560px) {
       .ag-form { grid-template-columns: 1fr; }
@@ -121,9 +131,22 @@
         <div class="ag-days" id="dayStrip" role="group" aria-label="Saring per hari"></div>
       </section>
 
+      <section class="ag-panel ag-quick" id="quickPanel" hidden>
+        <h2>Tulis cepat</h2>
+        <label for="qText" class="sr-only" style="position:absolute;left:-9999px">Daftar tugas</label>
+        <textarea id="qText" placeholder="Satu baris satu tugas, contoh:&#10;PAP rapat internal senin&#10;tesis revisi bab 3 penting&#10;IGD evaluasi register kamis&#10;klaim BPJS pending besok"></textarea>
+        <p class="ag-hint">Pekerjaan, hari (senin–minggu, hari ini, besok), <b>penting</b>, dan <b>minggu depan</b> dikenali otomatis. Periksa pratinjau sebelum menyimpan.</p>
+        <ul class="ag-prev" id="qPreview" aria-live="polite"></ul>
+        <div class="ag-quick-actions">
+          <button class="ag-btn main" type="button" id="qSave" disabled>Simpan semua</button>
+          <span class="ag-msg" id="qMsg" aria-live="polite"></span>
+        </div>
+      </section>
+
       <section class="ag-panel" id="addPanel" hidden>
-        <h2>Tambah tugas</h2>
-        <form class="ag-form" id="addForm">
+        <details class="ag-details">
+        <summary>Tambah satu per satu (form lengkap)</summary>
+        <form class="ag-form" id="addForm" style="margin-top:.9rem">
           <label class="full">Tugas
             <input id="fTugas" maxlength="300" placeholder="Contoh: Revisi SPO transfer pasien" required />
           </label>
@@ -135,6 +158,7 @@
           <div style="align-self:end"><button class="ag-btn main" type="submit" id="addBtn">Tambah tugas</button></div>
         </form>
         <p class="ag-msg" id="addMsg" aria-live="polite"></p>
+        </details>
       </section>
 
       <section class="ag-panel" id="listPanel" hidden>
@@ -213,7 +237,7 @@
 
     function showMain(on) {
       $("setupPanel").hidden = on;
-      ["weekPanel", "addPanel", "listPanel"].forEach(id => $(id).hidden = !on);
+      ["weekPanel", "quickPanel", "addPanel", "listPanel"].forEach(id => $(id).hidden = !on);
     }
 
     function isThisWeek() { return iso(week) === iso(mondayOf(new Date())); }
@@ -290,6 +314,118 @@
         return false;
       }
     }
+
+
+    /* ---------- Tulis cepat: ubah kalimat singkat menjadi tugas ---------- */
+    // LABEL: nama pekerjaan yang boleh dibuang bila ditulis di depan ("PAP rapat ..." -> "Rapat ...")
+    const LABEL = {
+      "RANAP": ["ranap"], "IGD Sedayu": ["igd sedayu", "igd", "sgh", "sedayu"], "Casemix & BPJS": ["casemix"],
+      "PAP Akreditasi": ["pap", "akreditasi", "akred"], "Familia Medika": ["familia medika", "familia", "fm"], "Tesis": ["tesis", "thesis"]
+    };
+    // ALIAS: kata yang dikenali untuk menentukan pekerjaan (tidak dibuang dari teks)
+    const ALIAS = [
+      ["RANAP", ["ranap", "rawat inap", "bangsal"]],
+      ["IGD Sedayu", ["igd", "sedayu", "sgh"]],
+      ["Casemix & BPJS", ["casemix", "bpjs", "klaim", "verifikasi", "verif", "inacbg", "ina-cbg"]],
+      ["PAP Akreditasi", ["pap", "akreditasi", "akred", "spo", "survei", "survey"]],
+      ["Familia Medika", ["familia medika", "familia", "home care", "homecare", "klinik", "fm"]],
+      ["Tesis", ["tesis", "thesis", "sempro", "bimbingan", "kuliah", "mars", "jurnal", "kuesioner"]]
+    ];
+    const HARI_KATA = { senin: "Senin", selasa: "Selasa", rabu: "Rabu", kamis: "Kamis", jumat: "Jumat", "jum'at": "Jumat", sabtu: "Sabtu", minggu: "Minggu" };
+    const reEsc = t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const hasWord = (txt, w) => new RegExp(`(^|[^\\p{L}\\d])${reEsc(w)}(?=$|[^\\p{L}\\d])`, "iu").test(txt);
+    const cutWord = (txt, w) => txt.replace(new RegExp(`(^|[^\\p{L}\\d])${reEsc(w)}(?=$|[^\\p{L}\\d])`, "iu"), "$1");
+
+    function parseLine(line) {
+      let t = line.replace(/^\s*(?:[-*•·]|\d+[.)])\s*/, "").trim();
+      if (!t) return null;
+      let pekerjaan = "Lainnya", prioritas = "Biasa", hari = "Kapan saja", geser = 0;
+
+      // pekerjaan: label di depan ("PAP: ..." atau "PAP ...") dibuang dari teks, selain itu cukup dikenali
+      for (const [p, words] of Object.entries(LABEL)) {
+        const w = words.find(w => new RegExp(`^${reEsc(w)}(?:\\s*[:\\-–]\\s*|\\s+)`, "i").test(t + " "));
+        if (w) { pekerjaan = p; t = t.replace(new RegExp(`^${reEsc(w)}(?:\\s*[:\\-–]\\s*|\\s+|$)`, "i"), ""); break; }
+      }
+      if (pekerjaan === "Lainnya") {
+        const hit = ALIAS.find(([, words]) => words.some(w => hasWord(t, w)));
+        if (hit) pekerjaan = hit[0];
+      }
+
+      // prioritas
+      for (const w of ["sangat penting", "penting", "urgent", "segera"]) {
+        if (hasWord(t, w)) { prioritas = "Penting"; t = cutWord(t, w); break; }
+      }
+      if (/!\s*$/.test(t)) { prioritas = "Penting"; t = t.replace(/!+\s*$/, ""); }
+
+      // minggu depan / minggu ini (diproses sebelum nama hari "minggu")
+      if (hasWord(t, "minggu depan")) { geser = 7; t = cutWord(t, "minggu depan"); }
+      if (hasWord(t, "minggu ini")) { t = cutWord(t, "minggu ini"); }
+
+      // hari
+      const today = new Date();
+      if (hasWord(t, "hari ini")) { hari = HARI_NAMA(today); t = cutWord(t, "hari ini"); }
+      else if (hasWord(t, "besok")) {
+        const b = new Date(today); b.setDate(b.getDate() + 1);
+        hari = HARI_NAMA(b); t = cutWord(t, "besok");
+        if (mondayOf(b).getTime() !== mondayOf(today).getTime()) geser = 7;
+      } else {
+        for (const [k, v] of Object.entries(HARI_KATA)) {
+          const pola = ["hari " + k, k];
+          const w = pola.find(w => hasWord(t, w));
+          if (w) { hari = v; t = cutWord(t, w); break; }
+        }
+      }
+
+      t = t.replace(/\s{2,}/g, " ").replace(/^[\s,;:–-]+|[\s,;:–-]+$/g, "").trim();
+      if (!t) return null;
+      t = t.charAt(0).toUpperCase() + t.slice(1);
+      return { tugas: t.slice(0, 300), pekerjaan, hari, prioritas, geser };
+    }
+    function HARI_NAMA(d) { return HARI[(d.getDay() + 6) % 7]; }
+
+    function quickItems() {
+      return $("qText").value.split(/\n+/).map(parseLine).filter(Boolean);
+    }
+    function renderQuick() {
+      const list = quickItems();
+      const warna = Object.fromEntries(PEKERJAAN);
+      $("qPreview").innerHTML = list.map(q => `
+        <li style="--c:${warna[q.pekerjaan] || "#94a3b8"}">
+          <span class="t">${esc(q.tugas)}</span>
+          <span class="ag-pill">${esc(q.pekerjaan)}</span>
+          <span class="ag-pill">${esc(q.hari)}${q.geser ? " · minggu depan" : ""}</span>
+          ${q.prioritas === "Penting" ? '<span class="ag-pill pent">Penting</span>' : ""}
+        </li>`).join("");
+      $("qSave").disabled = !list.length;
+      $("qSave").textContent = list.length ? `Simpan ${list.length} tugas` : "Simpan semua";
+    }
+    $("qText").addEventListener("input", () => { renderQuick(); $("qMsg").textContent = ""; });
+
+    $("qSave").addEventListener("click", async () => {
+      const list = quickItems();
+      if (!list.length) return;
+      const btn = $("qSave"); btn.disabled = true;
+      $("qMsg").className = "ag-msg"; 
+      let ok = 0; const gagal = [];
+      for (const q of list) {
+        $("qMsg").textContent = `Menyimpan ${ok + 1}/${list.length}…`;
+        const m = new Date(week); m.setDate(m.getDate() + q.geser);
+        try {
+          const { item } = await api("add", { minggu: iso(m), tugas: q.tugas, pekerjaan: q.pekerjaan, hari: q.hari, prioritas: q.prioritas });
+          if (iso(m) === iso(week)) items.push(item);
+          ok++;
+        } catch (e) { gagal.push(q.tugas + " (" + e.message + ")"); }
+      }
+      render();
+      if (gagal.length) {
+        $("qMsg").className = "ag-msg err";
+        $("qMsg").textContent = `${ok} tersimpan, ${gagal.length} gagal: ${gagal.join("; ")}`;
+      } else {
+        $("qText").value = ""; renderQuick();
+        $("qMsg").textContent = `${ok} tugas tersimpan.`;
+      }
+      btn.disabled = !quickItems().length;
+    });
 
     $("addForm").addEventListener("submit", async ev => {
       ev.preventDefault();
