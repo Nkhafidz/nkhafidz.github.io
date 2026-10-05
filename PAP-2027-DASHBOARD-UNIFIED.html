@@ -127,7 +127,7 @@
 <script>
 /* ====== KONFIGURASI ====== */
 const SHEET_ID = "1Tcaloh5Fl_-h4CxB-jwVxEOVOVeeene5fuLaOE2oIEk";
-const GID = "0"; // tab pertama
+const PUB_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSoxwVGRmTVzdjJOKGQ45jnwVwdAV7_1iF2xTSuMusJO6cgZ03eJWrigJouhMhr1BG72HznBT80SoF-/pub?output=csv";
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/edit";
 document.getElementById('sheetLink').href = SHEET_URL;
 
@@ -143,35 +143,47 @@ let ROWS=[], activeFilter="ALL";
 
 function loadData(manual){
   setStatus("loading","Memuat data…");
-  const cb="__gv"+Date.now();
-  window[cb]=function(resp){ try{ handle(resp); }catch(e){ showErr(e.message); } cleanup(); };
-  function cleanup(){ delete window[cb]; if(sc&&sc.parentNode) sc.parentNode.removeChild(sc); clearTimeout(to); }
-  const url="https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?gid="+GID+
-            "&tqx=out:json;responseHandler:"+cb+"&t="+Date.now();
-  const sc=document.createElement("script");
-  sc.src=url; sc.onerror=function(){ cleanup(); showErr("network"); };
-  const to=setTimeout(function(){ cleanup(); showErr("timeout"); }, 12000);
-  document.body.appendChild(sc);
+  fetch(PUB_CSV + "&_=" + Date.now(), {cache:"no-store"})
+    .then(function(r){ if(!r.ok) throw new Error("http "+r.status); return r.text(); })
+    .then(function(txt){ handleCSV(txt); })
+    .catch(function(e){ showErr((e&&e.message)||"network"); });
 }
 
-function handle(resp){
-  const t=resp.table; if(!t||!t.rows){ showErr("empty"); return; }
-  // map columns by label, fallback to fixed index
-  const labels=(t.cols||[]).map(c=>(c.label||"").toString().trim().toLowerCase());
-  function idx(name,fallback){ const i=labels.indexOf(name); return i>=0?i:fallback; }
-  const iStd=idx("standar",1), iEp=idx("ep",2), iUr=idx("uraian singkat",3),
-        iPj=idx("penanggung jawab",9), iPr=idx("profesi",10), iSt=idx("status",11);
-  const cell=(r,i)=> (r.c&&r.c[i]&&r.c[i].v!=null)? r.c[i].v : "";
+function parseCSV(text){
+  const rows=[]; let row=[], field="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){ field+='"'; i++; } else q=false; }
+      else field+=c;
+    } else {
+      if(c==='"') q=true;
+      else if(c===','){ row.push(field); field=""; }
+      else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=""; }
+      else if(c!=='\r') field+=c;
+    }
+  }
+  if(field.length||row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+
+function handleCSV(txt){
+  const grid=parseCSV(txt).filter(r=> r.some(c=>(c||"").trim()!==""));
+  if(grid.length<2){ showErr("empty"); return; }
+  const labels=grid[0].map(h=>(h||"").toString().trim().toLowerCase());
+  function idx(name,fb){ const i=labels.indexOf(name); return i>=0?i:fb; }
+  const iStd=idx("standar",1), iEp=idx("ep",2), iUr=idx("uraian singkat elemen penilaian",3),
+        iPj=idx("penanggung jawab",9), iPr=idx("profesi",10), iSt=idx("status",11), iNo=idx("no",0);
   ROWS=[];
-  t.rows.forEach(r=>{
-    const std=cell(r,iStd); if(!std) return;
-    const no=cell(r,0);
+  for(let r=1;r<grid.length;r++){
+    const row=grid[r];
+    const std=(row[iStd]||"").trim(); if(!std) continue;
     ROWS.push({
-      no: no, std: std.toString().trim(), ep: cell(r,iEp).toString().trim(),
-      ur: cell(r,iUr).toString(), pj: cell(r,iPj).toString().trim(),
-      prof: cell(r,iPr).toString().trim(), st: normStatus(cell(r,iSt))
+      no:(row[iNo]||"").trim(), std:std, ep:(row[iEp]||"").trim(),
+      ur:(row[iUr]||"").trim(), pj:(row[iPj]||"").trim(),
+      prof:(row[iPr]||"").trim(), st:normStatus(row[iSt]||"")
     });
-  });
+  }
   if(!ROWS.length){ showErr("empty"); return; }
   document.getElementById('errbox').style.display='none';
   setStatus("live","Data termuat ("+ROWS.length+" EP)");
@@ -258,9 +270,9 @@ function setStatus(mode,txt){
 function showErr(kind){
   setStatus("off","Gagal memuat data");
   const box=document.getElementById('errbox'); box.style.display='block';
-  box.innerHTML="<b>Dashboard belum bisa membaca Google Sheet.</b><br>"+
-   "Pastikan sheet di-<b>Share → Anyone with the link → Viewer</b>, lalu klik <b>⟳ Perbarui</b>.<br>"+
-   "<small style='color:#8a6a2a'>Kode: "+kind+" · Sheet ID: "+SHEET_ID+"</small>";
+  box.innerHTML="<b>Dashboard belum bisa membaca data.</b><br>"+
+   "Pastikan sheet masih <b>Publish to web (CSV)</b> aktif, lalu klik <b>⟳ Perbarui</b>.<br>"+
+   "<small style='color:#8a6a2a'>Kode: "+kind+"</small>";
 }
 loadData();
 </script>
