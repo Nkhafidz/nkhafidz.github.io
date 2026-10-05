@@ -72,6 +72,18 @@
     .jp-cell.hol .n { color: var(--danger); }
     .jp-legend .ev, .jp-cell .ev { width: .45rem; height: .45rem; border-radius: 50%; background: var(--primary); display: inline-block; margin-left: 2px; }
     .jp-gl { display: block; font-size: .78rem; color: var(--accent); }
+    .jp-edit textarea { width: 100%; min-height: 6rem; resize: vertical; font: inherit; line-height: 1.5; color: var(--text); background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .8rem; }
+    .jp-edit textarea:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+    .jp-prev { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .4rem; }
+    .jp-prev li { padding: .55rem .7rem; border-radius: 12px; background: var(--card-strong); border-left: 4px solid var(--c); }
+    .jp-prev .top { display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+    .jp-prev .chg { font-weight: 600; }
+    .jp-prev .sub { display: block; font-size: .82rem; color: var(--muted); margin-top: .15rem; }
+    .jp-prev .bad { color: var(--danger); }
+    .jp-prev .warn { color: var(--accent); }
+    .jp-codes { font-size: .8rem; color: var(--muted); margin-top: .5rem; }
+    .jp-codes summary { cursor: pointer; }
+    .jp-codes p { margin: .35rem 0 0; }
     [hidden] { display: none !important; }
     @media (max-width: 760px) {
       .jp-top { grid-template-columns: 1fr; }
@@ -157,6 +169,19 @@
           <span><i style="--c:var(--klinik)"></i>Klinik</span>
           <span><span class="jp-dot"></span> Bentrok / istirahat kritis</span>
           <span><span class="ev"></span> Event</span>
+        </div>
+      </section>
+
+      <section class="jp-panel jp-edit" aria-labelledby="editTitle">
+        <h2 id="editTitle">Ubah jadwal</h2>
+        <label for="eText" style="position:absolute;left:-9999px">Perubahan jadwal</label>
+        <textarea id="eText" placeholder="Satu baris satu perubahan, contoh:&#10;rsud pi 12&#10;sgh m 15-17&#10;rsud mb 20, 22 gl&#10;klinik s besok&#10;rsud libur 25"></textarea>
+        <p class="jp-note" style="margin:.45rem 0 0">Tulis tempat (rsud, sgh, klinik), kode shift, dan tanggal di bulan yang sedang ditampilkan (<b id="editMonth"></b>). Gunakan <b>libur</b> atau <b>hapus</b> untuk mengosongkan, dan <b>gl</b> untuk Ganti Libur.</p>
+        <details class="jp-codes"><summary>Lihat daftar kode</summary><div id="codeList"></div></details>
+        <ul class="jp-prev" id="ePreview" aria-live="polite"></ul>
+        <div class="jp-actions" style="margin-top:.75rem;align-items:center">
+          <button class="btn primary" type="button" id="eSave" disabled>Simpan perubahan</button>
+          <span class="jp-msg" id="eMsg" aria-live="polite"></span>
         </div>
       </section>
 
@@ -381,7 +406,9 @@
     async function renderMonth() {
       const y = view.getFullYear(), m = view.getMonth();
       $("calTitle").textContent = view.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+      $("editMonth").textContent = view.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
       const data = await getMonth(y, m);
+      editData = data; renderCodes(data); renderEdit();
       const days = new Date(y, m + 1, 0).getDate();
       const lead = (new Date(y, m, 1).getDay() + 6) % 7;
       let html = DOW.map(d => `<div class="jp-dow">${d}</div>`).join("");
@@ -458,6 +485,128 @@
       selected = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       refresh();
     });
+
+    /* ---------- Ubah jadwal cepat ---------- */
+    const PLACE_WORD = [["rs sgh", "SGH"], ["sgh", "SGH"], ["sedayu", "SGH"], ["rsud", "RSUD"], ["saras", "RSUD"], ["klinik", "KLINIK"], ["familia", "KLINIK"]];
+    const CLEAR_WORD = ["libur", "hapus", "kosong", "kosongkan", "off", "-"];
+    let editData = null;
+
+    function codesOf(data, place) {
+      return (data.master || []).filter(r => r.tempat === place);
+    }
+    function parseEditLine(line, data, y, m) {
+      const out = { raw: line.trim(), place: null, code: null, clear: false, gl: false, days: [], err: "" };
+      let t = " " + line.toLowerCase().replace(/[,;]/g, " ") + " ";
+      if (!t.trim()) return null;
+      for (const [w, p] of PLACE_WORD) {
+        const re = new RegExp(`\\s${w.replace(" ", "\\s+")}\\s`);
+        if (re.test(t)) { out.place = p; t = t.replace(re, " "); break; }
+      }
+      if (/\s\(?gl\)?\s/.test(t)) { out.gl = true; t = t.replace(/\s\(?gl\)?\s/g, " "); }
+      const last = new Date(y, m + 1, 0).getDate();
+      const addDay = d => { if (d >= 1 && d <= last && !out.days.includes(d)) out.days.push(d); else if (d < 1 || d > last) out.err = `Tanggal ${d} tidak ada di bulan ini`; };
+      const today = new Date();
+      const rel = (word, plus) => {
+        if (new RegExp(`\\s${word}\\s`).test(t)) {
+          const d = new Date(today); d.setDate(d.getDate() + plus);
+          if (d.getFullYear() === y && d.getMonth() === m) addDay(d.getDate());
+          else out.err = `"${word}" berada di luar bulan yang ditampilkan`;
+          t = t.replace(new RegExp(`\\s${word}\\s`), " ");
+        }
+      };
+      rel("hari ini", 0); rel("besok", 1); rel("lusa", 2);
+      t = t.replace(/\s(?:tgl|tanggal)\.?\s/g, " ");
+      t = t.replace(/\s(\d{1,2})\s*(?:-|–|s\.?d\.?|sampai)\s*(\d{1,2})\s/g, (_, a, b) => {
+        for (let d = +a; d <= +b; d++) addDay(d); return " ";
+      });
+      t = t.replace(/\s(\d{1,2})(?=\s)/g, (_, a) => { addDay(+a); return " "; });
+      const rest = t.trim().split(/\s+/).filter(Boolean);
+      for (const w of rest) {
+        if (CLEAR_WORD.includes(w)) { out.clear = true; continue; }
+        if (out.code) { out.err = out.err || `Kata "${w}" tidak dikenali`; continue; }
+        out.code = w;
+      }
+      if (!out.place) out.err = "Tempat belum ditulis (rsud, sgh, atau klinik)";
+      else if (!out.days.length) out.err = out.err || "Tanggal belum ditulis";
+      else if (!out.clear && !out.code) out.err = "Kode shift belum ditulis";
+      else if (!out.clear) {
+        const hit = codesOf(data, out.place).find(r => r.kode.toLowerCase() === out.code.toLowerCase());
+        if (hit) out.code = hit.kode;
+        else out.err = `Kode "${out.code}" tidak ada untuk ${PLACES[out.place].label} di Master_Shift`;
+      }
+      if (out.clear) out.code = "";
+      else if (out.code && out.gl) out.code += " (GL)";
+      return out;
+    }
+
+    function editChanges() {
+      if (!editData) return [];
+      const y = view.getFullYear(), m = view.getMonth();
+      return $("eText").value.split(/\n+/).map(l => parseEditLine(l, editData, y, m)).filter(Boolean);
+    }
+
+    function renderEdit() {
+      const y = view.getFullYear(), m = view.getMonth();
+      $("editMonth").textContent = view.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+      if (!editData) { $("ePreview").innerHTML = ""; $("eSave").disabled = true; return; }
+      const lines = editChanges();
+      // simulasi hasil untuk cek bentrok
+      const rows = JSON.parse(JSON.stringify(editData.rows));
+      lines.filter(l => !l.err).forEach(l => l.days.forEach(d => {
+        rows[l.place] = rows[l.place] || []; while (rows[l.place].length < d) rows[l.place].push("");
+        rows[l.place][d - 1] = l.code;
+      }));
+      const sim = prepare({ ...editData, rows });
+      const mon = view.toLocaleDateString("id-ID", { month: "short" });
+      let valid = 0;
+      $("ePreview").innerHTML = lines.map(l => {
+        if (l.err) return `<li style="--c:var(--danger)"><span class="chg">${esc(l.raw)}</span><span class="sub bad">${esc(l.err)}</span></li>`;
+        return l.days.map(d => {
+          valid++;
+          const before = (editData.rows[l.place] || [])[d - 1] || "";
+          const sh = sim.shifts[d].find(s => s.place === l.place);
+          const nama = l.code ? (sh?.nama || l.code) : "dikosongkan";
+          const notes = [...(sim.conf[d] || []).map(t => `<span class="sub bad">⚠️ ${esc(t)}</span>`),
+                         ...(sim.rest[d] || []).map(t => `<span class="sub warn">⏳ ${esc(t)}</span>`)].join("");
+          return `<li style="--c:${PLACES[l.place].color}">
+            <span class="top"><span class="chg">${PLACES[l.place].label} · ${d} ${mon}</span><span>${esc(before || "(kosong)")} → <b>${esc(l.code || "(kosong)")}</b></span></span>
+            <span class="sub">${esc(nama)}${sh?.jam ? " · " + esc(sh.jam) : ""}</span>${notes}</li>`;
+        }).join("");
+      }).join("");
+      const ada = lines.some(l => l.err);
+      $("eSave").disabled = !valid || ada;
+      $("eSave").textContent = valid ? `Simpan ${valid} perubahan` : "Simpan perubahan";
+    }
+
+    function renderCodes(data) {
+      $("codeList").innerHTML = ORDER.map(p => {
+        const list = codesOf(data, p).filter(r => r.masuk || OFF[r.kode.toUpperCase()]);
+        return list.length ? `<p><b>${PLACES[p].label}:</b> ${list.map(r => `${esc(r.kode)} = ${esc(r.nama)}`).join(" · ")}</p>` : "";
+      }).join("");
+    }
+
+    $("eText").addEventListener("input", () => { $("eMsg").textContent = ""; renderEdit(); });
+    $("eSave").addEventListener("click", async () => {
+      const y = view.getFullYear(), m = view.getMonth();
+      const lines = editChanges();
+      if (lines.some(l => l.err)) return;
+      const changes = lines.flatMap(l => l.days.map(d => ({ year: y, month: m + 1, day: d, place: l.place, code: l.code })));
+      if (!changes.length) return;
+      $("eSave").disabled = true; $("eMsg").className = "jp-msg"; $("eMsg").textContent = "Menyimpan…";
+      try {
+        const out = await api({ action: "setShifts", changes });
+        const n = (out.hasil || []).filter(h => h.berubah).length;
+        delete cache[mkey(y, m)];
+        delete cache[mkey(m === 11 ? y + 1 : y, (m + 1) % 12)];
+        $("eText").value = "";
+        await Promise.all([renderMonth(), renderDay()]);
+        $("eMsg").textContent = n ? `${n} perubahan tersimpan dan tercatat di Log.` : "Tidak ada yang berubah (kode sudah sama).";
+      } catch (e) {
+        $("eMsg").className = "jp-msg err"; $("eMsg").textContent = "Gagal menyimpan: " + e.message;
+        $("eSave").disabled = false;
+      }
+    });
+
     async function refreshMonth() {
       try { await renderMonth(); $("loadMsg").textContent = ""; }
       catch (e) { $("loadMsg").textContent = "Gagal memuat: " + e.message; $("loadMsg").className = "jp-msg err"; }
