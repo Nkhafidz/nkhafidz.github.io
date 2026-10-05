@@ -174,7 +174,7 @@
           <span><i style="--c:var(--klinik)"></i>Klinik</span>
           <span><span class="jp-dot"></span> Bentrok / istirahat kritis</span>
           <span><span class="ev"></span> Event</span>
-          <span><span class="ab"></span> Absen berbeda dari shift</span>
+          <span><span class="ab"></span> Jam absen berbeda dari shift</span>
         </div>
       </section>
 
@@ -399,7 +399,7 @@
       if (places.length) {
         rows.push(`<div><span>👔</span><span>${places.map(p => `${PLACES[p].label}: ${esc(sr[p] || "-")}`).join(" · ")}</span></div>`);
       }
-      (data.absen[d] || []).forEach(a => rows.push(`<div class="${a.beda ? "jp-amber" : ""}"><span>🕘</span><span>Absen ${PLACES[a.place].label}: ${esc(a.known ? a.nama : a.raw)}${a.jam ? " · " + esc(a.jam) : ""}${a.beda ? " (berbeda dari shift)" : ""}</span></div>`));
+      (data.absen[d] || []).forEach(a => rows.push(`<div class="${a.beda ? "jp-amber" : ""}"><span>🕘</span><span>Absen ${PLACES[a.place].label}: ${esc(a.known ? a.nama : a.raw)}${a.jam ? " · " + esc(a.jam) : ""}${a.beda ? " (jam absen berbeda, shift tetap berjalan)" : ""}</span></div>`));
       (data.evByDay[d] || []).forEach(e => rows.push(`<div><span>📌</span><span>${esc(e.judul)}${e.mulai ? ` · ${esc(e.mulai)}${e.selesai ? "–" + esc(e.selesai) : ""}` : ""}${e.lokasi ? ` · ${esc(e.lokasi)}` : ""}</span></div>`));
       if (data.lain[d]) rows.push(`<div><span>📝</span><span>${esc(data.lain[d])}</span></div>`);
       (data.conf[d] || []).forEach(t => rows.push(`<div class="jp-warn"><span>⚠️</span><span>${esc(t)}</span></div>`));
