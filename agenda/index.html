@@ -153,7 +153,8 @@
   (() => {
     "use strict";
     const DEFAULT_API = ""; // bisa diisi URL Web App agar tidak perlu diketik di tiap perangkat
-    const K_API = "notesme_agenda_api", K_PIN = "notesme_agenda_pin";
+    const K_API = "notesme_api", K_PIN = "notesme_pin"; // dipakai bersama halaman Agenda & Jadwal
+    const LEGACY = { notesme_api: "notesme_agenda_api", notesme_pin: "notesme_agenda_pin" };
 
     const PEKERJAAN = [
       ["RANAP", "#38bdf8"], ["IGD Sedayu", "#fb7185"], ["Casemix & BPJS", "#a78bfa"],
@@ -164,7 +165,7 @@
 
     const $ = id => document.getElementById(id);
     const store = {
-      get: k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } },
+      get: k => { try { return localStorage.getItem(k) || localStorage.getItem(LEGACY[k] || "") || ""; } catch { return ""; } },
       set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
       del: k => { try { localStorage.removeItem(k); } catch {} }
     };

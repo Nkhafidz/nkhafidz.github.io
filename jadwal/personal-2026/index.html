@@ -186,7 +186,8 @@
   (() => {
     "use strict";
     const DEFAULT_API = "";
-    const K_API = "notesme_jadwal_api", K_PIN = "notesme_jadwal_pin";
+    const K_API = "notesme_api", K_PIN = "notesme_pin"; // dipakai bersama halaman Agenda & Jadwal
+    const LEGACY = { notesme_api: "notesme_jadwal_api", notesme_pin: "notesme_jadwal_pin" };
     const PLACES = {
       RSUD:   { label: "RSUD",   color: "var(--rsud)" },
       SGH:    { label: "RS SGH", color: "var(--sgh)" },
@@ -199,7 +200,7 @@
     const $ = id => document.getElementById(id);
     const esc = t => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const store = {
-      get: k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } },
+      get: k => { try { return localStorage.getItem(k) || localStorage.getItem(LEGACY[k] || "") || ""; } catch { return ""; } },
       set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
       del: k => { try { localStorage.removeItem(k); } catch {} }
     };
