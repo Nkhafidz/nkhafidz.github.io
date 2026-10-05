@@ -190,11 +190,23 @@
 
     async function api(action, data = {}) {
       const url = store.get(K_API) || DEFAULT_API;
-      const res = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({ action, pin: store.get(K_PIN), ...data })
-      });
-      const out = await res.json();
+      let text;
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          body: JSON.stringify({ action, pin: store.get(K_PIN), ...data })
+        });
+        text = await res.text();
+      } catch {
+        throw new Error("Tidak bisa menghubungi Web App. Pastikan akses deployment \"Anyone\" dan URL berakhiran /exec.");
+      }
+      let out;
+      try { out = JSON.parse(text); }
+      catch {
+        throw new Error(/doPost|doGet|function/i.test(text)
+          ? "Fungsi doPost tidak ditemukan. Kode kemungkinan belum disimpan sebelum deploy; simpan lalu buat versi deployment baru."
+          : "Web App tidak mengembalikan data. Kemungkinan izin (Authorize) belum selesai atau akses bukan \"Anyone\".");
+      }
       if (!out.ok) throw new Error(out.error || "Permintaan gagal.");
       return out;
     }
@@ -309,7 +321,7 @@
       const ok = await load();
       if (!ok) {
         showMain(false);
-        $("setupMsg").textContent = "Gagal terhubung. Periksa URL Web App dan PIN.";
+        $("setupMsg").textContent = "Gagal terhubung: " + ($("list").textContent.replace(/^Gagal memuat: /, "") || "periksa URL dan PIN.");
         $("setupMsg").className = "ag-msg err";
       }
     });
