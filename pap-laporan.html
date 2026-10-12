@@ -393,8 +393,8 @@ function unduh(fmt){
 function kirimTelegram(){
   const n=document.getElementById('teleNote');
   if(!GAS_SEND_URL){ n.className='note'; n.innerHTML='Tip: ketik <b>/laporan</b> di grup Telegram.'; return; }
-  if(!LAST){ alert('Data belum termuat.'); return; }
-  n.className='note'; n.textContent='⏳ Menyiapkan laporan (teks + JPG + PDF) lalu mengirim ke Telegram…';
+  if(!LAST){ alert('Data belum termuat. Klik Perbarui dulu.'); return; }
+  n.className='note'; n.textContent='⏳ Menyiapkan JPG + PDF laporan…';
   buildLand(); buildPortrait();
   setTimeout(function(){
     html2canvas(document.getElementById('printLand'),{scale:2,backgroundColor:'#F3F1EA'}).then(function(lc){
@@ -404,13 +404,18 @@ function kirimTelegram(){
         try{ const {jsPDF}=window.jspdf; const pdf=new jsPDF('p','mm','a4');
              pdf.addImage(pc.toDataURL('image/jpeg',0.92),'JPEG',0,0,210,297);
              pdfB64 = pdf.output('datauristring').split(',')[1]; }catch(e){}
-        fetch(GAS_SEND_URL,{method:'POST',mode:'no-cors',
-          headers:{'Content-Type':'text/plain;charset=utf-8'},
-          body:JSON.stringify({action:'report',jpg:jpg,pdf:pdfB64})})
-          .then(function(){ n.className='note ok'; n.textContent='✅ Terkirim ke Telegram — teks + JPG (laporan ini) + PDF. Cek grup.'; })
-          .catch(function(){ n.className='note ok'; n.textContent='Terkirim ke Telegram — cek grup.'; });
+        // Kirim via form POST ke iframe tersembunyi (tahan redirect GAS, tak diblokir popup)
+        let ifr=document.getElementById('tgFrame');
+        if(!ifr){ ifr=document.createElement('iframe'); ifr.id='tgFrame'; ifr.name='tgFrame'; ifr.style.display='none'; document.body.appendChild(ifr); }
+        const f=document.createElement('form');
+        f.method='POST'; f.action=GAS_SEND_URL; f.target='tgFrame'; f.style.display='none';
+        const inp=document.createElement('input'); inp.type='hidden'; inp.name='payload';
+        inp.value=JSON.stringify({action:'report',jpg:jpg,pdf:pdfB64});
+        f.appendChild(inp); document.body.appendChild(f); f.submit();
+        setTimeout(function(){ f.remove(); },3000);
+        n.className='note ok'; n.textContent='📤 Dikirim ke bot. Tunggu ±5–10 detik, cek grup Telegram (teks + JPG + PDF).';
       });
-    });
+    }).catch(function(e){ n.className='note'; n.textContent='Gagal menyiapkan gambar: '+(e&&e.message||e)+'. Coba muat ulang halaman.'; });
   },500);
 }
 loadData();
