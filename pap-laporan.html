@@ -47,29 +47,59 @@
   .foot{padding:10px 22px 16px;font-size:11px;color:var(--mut);text-align:center}
   .msg{display:none;background:#FFF4E5;border:1px solid #F0CE95;color:#7a5200;border-radius:12px;padding:14px 16px;margin-top:14px;font-size:13px}
 
-  /* ====== Layout khusus untuk unduh PDF/JPG (A4 landscape, gaya laporan bulanan) ====== */
-  #printArea{position:absolute;left:-12000px;top:0;width:1123px;height:794px;background:#F3F1EA;padding:34px 42px;font-family:'Segoe UI',Arial,sans-serif;color:#1f2a30}
-  .p-head{display:flex;justify-content:space-between;align-items:flex-start}
-  .p-org{font-size:11px;letter-spacing:2px;color:var(--teal);font-weight:800;text-transform:uppercase}
-  .p-title{font-size:25px;font-weight:800;margin-top:3px;color:#122b36}
-  .p-meta{text-align:right;font-size:11.5px;color:#5C7883;line-height:1.5}
-  .p-rule{height:3px;background:var(--navy);margin:11px 0 20px;border-radius:2px}
-  .p-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-  .p-panel{background:#fff;border:1px solid #E6E2D7;border-radius:16px;padding:20px 22px}
-  .p-h{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:12px}
-  .p-table{width:100%;border-collapse:collapse;font-size:11.5px}
-  .p-table th,.p-table td{padding:4px 6px;text-align:center}
-  .p-table th{color:#5C7883;font-size:10px;border-bottom:1px solid #e2ddd0;text-transform:uppercase}
-  .p-table td.s{text-align:left;font-weight:700;color:var(--navy)}
-  .p-table tr.tot td{border-top:2px solid var(--navy);font-weight:800;padding-top:6px}
-  .p-kpis{display:flex;gap:14px;margin-top:16px}
-  .p-kpi{flex:1;border-radius:13px;padding:14px 16px}
-  .p-kpi.dark{background:var(--navy);color:#fff}
-  .p-kpi.light{background:#F2F6F7;color:var(--navy);border:1px solid #E6E2D7}
-  .p-kpi .pb{font-size:30px;font-weight:800;line-height:1}
-  .p-kpi .pl{font-size:11px;margin-top:5px;opacity:.92;line-height:1.35}
-  .p-note{font-size:10.5px;color:#5C7883;margin-top:12px;line-height:1.45}
-  .pdot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
+  /* ====== Area cetak PORTRAIT (untuk Unduh PDF) — gaya Laporan Bulanan ====== */
+  #printPortrait{position:absolute;left:-12000px;top:0;width:794px;height:1123px;overflow:hidden;background:#fff;
+    padding:22px 46px;font-family:'Segoe UI',Arial,sans-serif;color:#1f2a30}
+  .pp-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--navy);padding-bottom:8px}
+  .pp-org{font-size:11px;letter-spacing:2.5px;color:var(--teal);font-weight:800;text-transform:uppercase}
+  .pp-title{font-size:24px;font-weight:800;color:#122b36;margin-top:3px;line-height:1.05;max-width:430px}
+  .pp-meta{text-align:right;font-size:11px;color:#5C7883;line-height:1.5;padding-bottom:3px;white-space:nowrap}
+  .pp-sec{font-size:14px;font-weight:800;color:#122b36;margin:11px 0 6px}
+  .pp-table{width:100%;border-collapse:collapse;font-size:11.5px}
+  .pp-table th{color:#8294a0;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.3px;text-align:right;padding:4px 8px;border-bottom:1px solid #e6ecef}
+  .pp-table th:first-child{text-align:left}
+  .pp-table td{padding:3px 8px;text-align:right;border-bottom:1px solid #eef3f5}
+  .pp-table td:first-child{text-align:left;font-weight:700;color:var(--navy)}
+  .pp-table tr.tot td{border-top:2px solid var(--navy);border-bottom:none;font-weight:800;font-size:12.5px;padding-top:7px}
+  .pp-kpis{display:flex;gap:14px;margin:10px 0 2px}
+  .pp-kpi{flex:1;border:1px solid #d8e1e6;border-radius:5px;padding:10px 15px}
+  .pp-kpi.hi{border:2px solid var(--teal)}
+  .pp-kpi .n{font-size:28px;font-weight:800;line-height:1;color:#122b36}
+  .pp-kpi.hi .n{color:var(--teal)}
+  .pp-kpi .l{font-size:10.5px;color:#5C7883;margin-top:5px;line-height:1.3}
+  .pp-chart{height:140px;position:relative;margin-top:2px}
+  .pp-mem{width:100%;border-collapse:collapse;font-size:11.5px}
+  .pp-mem td{padding:3px 8px;border-bottom:1px solid #eef3f5;vertical-align:middle}
+  .pp-mem td.nm{font-weight:700;color:var(--navy);width:150px}
+  .pp-mem td.ep{text-align:right;color:#5C7883;width:70px;white-space:nowrap}
+  .pp-mem td.pc{text-align:right;font-weight:700;width:48px}
+  .pp-mbar{height:11px;border-radius:4px;background:#EAF1F4;overflow:hidden}
+  .pp-mbar>i{display:block;height:100%}
+  .pp-foot{font-size:9.5px;color:#8294a0;line-height:1.5;margin-top:9px;border-top:1px solid #eef3f5;padding-top:7px}
+
+  /* ====== Area cetak LANDSCAPE (untuk Unduh JPG) — format sebelumnya ====== */
+  #printLand{position:absolute;left:-12000px;top:0;width:1123px;height:794px;background:#F3F1EA;padding:34px 42px;font-family:'Segoe UI',Arial,sans-serif;color:#1f2a30}
+  .pl-head{display:flex;justify-content:space-between;align-items:flex-start}
+  .pl-org{font-size:11px;letter-spacing:2px;color:var(--teal);font-weight:800;text-transform:uppercase}
+  .pl-title{font-size:25px;font-weight:800;margin-top:3px;color:#122b36}
+  .pl-meta{text-align:right;font-size:11.5px;color:#5C7883;line-height:1.5}
+  .pl-rule{height:3px;background:var(--navy);margin:11px 0 20px;border-radius:2px}
+  .pl-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .pl-panel{background:#fff;border:1px solid #E6E2D7;border-radius:16px;padding:20px 22px}
+  .pl-h{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:12px}
+  .pl-table{width:100%;border-collapse:collapse;font-size:11.5px}
+  .pl-table th,.pl-table td{padding:4px 6px;text-align:center}
+  .pl-table th{color:#5C7883;font-size:10px;border-bottom:1px solid #e2ddd0;text-transform:uppercase}
+  .pl-table td.s{text-align:left;font-weight:700;color:var(--navy)}
+  .pl-table tr.tot td{border-top:2px solid var(--navy);font-weight:800;padding-top:6px}
+  .pl-kpis{display:flex;gap:14px;margin-top:16px}
+  .pl-kpi{flex:1;border-radius:13px;padding:14px 16px}
+  .pl-kpi.dark{background:var(--navy);color:#fff}
+  .pl-kpi.light{background:#F2F6F7;color:var(--navy);border:1px solid #E6E2D7}
+  .pl-kpi .pb{font-size:30px;font-weight:800;line-height:1}
+  .pl-kpi .pl2{font-size:11px;margin-top:5px;opacity:.92;line-height:1.35}
+  .pl-note{font-size:10.5px;color:#5C7883;margin-top:12px;line-height:1.45}
+  .pldot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -127,34 +157,62 @@
   <div class="msg" id="errbox"></div>
 </div>
 
-<!-- Area khusus untuk unduh (A4 landscape) -->
-<div id="printArea">
-  <div class="p-head">
+<!-- ======= Area cetak PORTRAIT (PDF) ======= -->
+<div id="printPortrait">
+  <div class="pp-head">
     <div>
-      <div class="p-org">TIM AKREDITASI PAP · RSUD SARAS ADYATMA KABUPATEN BANTUL</div>
-      <div class="p-title">Laporan Progres Akreditasi PAP 2027</div>
+      <div class="pp-org">TIM AKREDITASI PAP · RSUD SARAS ADYATMA KABUPATEN BANTUL</div>
+      <div class="pp-title">Laporan Progres Akreditasi PAP 2027</div>
     </div>
-    <div class="p-meta">Periode s.d. <span id="pPer">—</span><br>Sumber: Checklist 52 Elemen Penilaian (Instrumen 2024)</div>
+    <div class="pp-meta">Periode s.d. <span id="ppPer">—</span><br>Sumber: Checklist 52 Elemen Penilaian (Instrumen 2024)</div>
   </div>
-  <div class="p-rule"></div>
-  <div class="p-grid">
-    <div class="p-panel">
-      <div class="p-h">Rekap status kesiapan per standar</div>
-      <table class="p-table" id="pTable"></table>
-      <div class="p-kpis">
-        <div class="p-kpi dark"><div class="pb" id="pPct">0%</div><div class="pl">Kesiapan total<br><span id="pPctSub">0 dari 52 lengkap</span></div></div>
-        <div class="p-kpi light"><div class="pb" id="pJalan">0</div><div class="pl">EP sedang dikerjakan<br>(perbaikan + draft)</div></div>
-      </div>
-      <div class="p-note" id="pNote">—</div>
+
+  <div class="pp-sec">Rekap status kesiapan per standar</div>
+  <table class="pp-table" id="ppTable"></table>
+
+  <div class="pp-kpis">
+    <div class="pp-kpi hi"><div class="n" id="ppPct">0%</div><div class="l">Kesiapan total<br><span id="ppPctSub">0 dari 52 lengkap</span></div></div>
+    <div class="pp-kpi"><div class="n" id="ppJalan">0</div><div class="l">EP sedang dikerjakan<br>(perbaikan + draft)</div></div>
+    <div class="pp-kpi"><div class="n" id="ppBelum">0</div><div class="l">EP belum dikerjakan<br>(dari 52 EP)</div></div>
+  </div>
+
+  <div class="pp-sec">Kesiapan per standar (%)</div>
+  <div class="pp-chart"><canvas id="ppChart"></canvas></div>
+
+  <div class="pp-sec">Progres per anggota</div>
+  <table class="pp-mem" id="ppMem"></table>
+
+  <div class="pp-foot" id="ppFoot">—</div>
+</div>
+
+<!-- ======= Area cetak LANDSCAPE (JPG) — format sebelumnya ======= -->
+<div id="printLand">
+  <div class="pl-head">
+    <div>
+      <div class="pl-org">TIM AKREDITASI PAP · RSUD SARAS ADYATMA KABUPATEN BANTUL</div>
+      <div class="pl-title">Laporan Progres Akreditasi PAP 2027</div>
     </div>
-    <div class="p-panel">
-      <div class="p-h">Kesiapan per standar (%)</div>
-      <div style="height:300px"><canvas id="printChart"></canvas></div>
-      <div class="p-note">
-        <span class="pdot" style="background:#D9534F"></span>&lt;25%
-        <span class="pdot" style="background:#E9A23B;margin-left:8px"></span>&lt;50%
-        <span class="pdot" style="background:#2E9CB8;margin-left:8px"></span>&lt;75%
-        <span class="pdot" style="background:#1E8E6A;margin-left:8px"></span>≥75% &nbsp;·&nbsp; Dibuat: <span id="pTs"></span>
+    <div class="pl-meta">Periode s.d. <span id="plPer">—</span><br>Sumber: Checklist 52 Elemen Penilaian (Instrumen 2024)</div>
+  </div>
+  <div class="pl-rule"></div>
+  <div class="pl-grid">
+    <div class="pl-panel">
+      <div class="pl-h">Rekap status kesiapan per standar</div>
+      <table class="pl-table" id="plTable"></table>
+      <div class="pl-kpis">
+        <div class="pl-kpi dark"><div class="pb" id="plPct">0%</div><div class="pl2">Kesiapan total<br><span id="plPctSub">0 dari 52 lengkap</span></div></div>
+        <div class="pl-kpi light"><div class="pb" id="plJalan">0</div><div class="pl2">EP sedang dikerjakan<br>(perbaikan + draft)</div></div>
+      </div>
+      <div class="pl-note" id="plNote">—</div>
+    </div>
+    <div class="pl-panel">
+      <div class="pl-h">Kesiapan per standar (%)</div>
+      <div style="height:300px"><canvas id="plChart"></canvas></div>
+      <div class="pl-note">
+        <span class="pldot" style="background:#D9534F"></span>&lt;25%
+        <span class="pldot" style="background:#E9A23B;margin-left:8px"></span>&lt;50%
+        <span class="pldot" style="background:#2E9CB8;margin-left:8px"></span>&lt;75%
+        <span class="pldot" style="background:#1E8E6A;margin-left:8px"></span>≥75% &nbsp;·&nbsp; Dibuat: <span id="plTs"></span>
       </div>
     </div>
   </div>
@@ -168,6 +226,11 @@ const STD_ORDER=["PAP 1","PAP 1.1","PAP 1.2","PAP 2","PAP 2.1","PAP 2.2","PAP 2.
 function cby(p){return p>=75?'#1E8E6A':p>=50?'#2E9CB8':p>=25?'#E9A23B':'#D9534F';}
 function norm(s){s=(s||'').toString().trim().toLowerCase();return STATUS[s]?s:'belum';}
 let ROWS=[],chart=null,LAST=null;
+
+// Plugin kecil: label nilai di atas batang (tanpa library tambahan)
+const vlabels={id:'vlabels',afterDatasetsDraw:function(c){var m=c.getDatasetMeta(0);if(!m)return;var ctx=c.ctx;ctx.save();
+  ctx.font='bold 10px Segoe UI, Arial';ctx.fillStyle='#33454d';ctx.textAlign='center';
+  c.data.datasets[0].data.forEach(function(v,i){var b=m.data[i];if(b)ctx.fillText(v+'%',b.x,b.y-5);});ctx.restore();}};
 
 function loadData(){document.getElementById('live').textContent='• memuat…';
   fetch(PUB_CSV+'&_='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('http '+r.status);return r.text();})
@@ -194,7 +257,7 @@ function render(){
   ROWS.forEach(function(r){by[r.st]++;score+=STATUS[r.st].w;
     if(!std[r.std])std[r.std]={t:0,s:0,lengkap:0,perbaikan:0,draft:0,belum:0};
     std[r.std].t++;std[r.std].s+=STATUS[r.st].w;std[r.std][r.st]++;
-    if(!mem[r.pj])mem[r.pj]={t:0,s:0};mem[r.pj].t++;mem[r.pj].s+=STATUS[r.st].w;});
+    if(!mem[r.pj])mem[r.pj]={t:0,s:0,lengkap:0};mem[r.pj].t++;mem[r.pj].s+=STATUS[r.st].w;if(r.st==='lengkap')mem[r.pj].lengkap++;});
   const pct=Math.round(score/total*100);
   const now=new Date();const tgl=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
   document.getElementById('per').textContent='s.d. '+tgl;document.getElementById('ts').textContent=now.toLocaleString('id-ID');
@@ -215,14 +278,16 @@ function render(){
   trt.innerHTML='<td class="std">TOTAL</td><td>'+total+'</td><td>'+by.lengkap+'</td><td>'+by.perbaikan+'</td><td>'+by.draft+'</td><td>'+by.belum+'</td><td>'+pct+'%</td>';
   tb.appendChild(trt);
 
-  const el=document.getElementById('perMem');el.innerHTML='';
-  Object.keys(mem).sort().forEach(function(pj){const x=mem[pj];const p=Math.round(x.s/x.t*100);
-    const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:6px';
-    row.innerHTML='<div style="width:150px;font-weight:600">'+pj+'</div>'+
-      '<div style="flex:1;height:14px;background:#EAF1F4;border-radius:4px;overflow:hidden"><div style="height:100%;width:'+p+'%;background:#1C7293"></div></div>'+
-      '<div style="width:34px;text-align:right;color:#5C7883">'+p+'%</div>';el.appendChild(row);});
+  const mems=Object.keys(mem).filter(function(k){return k&&k!=='-';}).map(function(pj){const x=mem[pj];
+    return {pj:pj,t:x.t,lengkap:x.lengkap,p:Math.round(x.s/x.t*100)};}).sort(function(a,b){return b.p-a.p;});
 
-  LAST={pct:pct,total:total,by:by,rows:prows,labels:labels,vals:vals,cols:cols,
+  const el=document.getElementById('perMem');el.innerHTML='';
+  mems.forEach(function(m){const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:6px';
+    row.innerHTML='<div style="width:150px;font-weight:600">'+m.pj+'</div>'+
+      '<div style="flex:1;height:14px;background:#EAF1F4;border-radius:4px;overflow:hidden"><div style="height:100%;width:'+m.p+'%;background:'+cby(m.p)+'"></div></div>'+
+      '<div style="width:34px;text-align:right;color:#5C7883">'+m.p+'%</div>';el.appendChild(row);});
+
+  LAST={pct:pct,total:total,by:by,rows:prows,labels:labels,vals:vals,cols:cols,mems:mems,
         tgl:tgl,ts:now.toLocaleString('id-ID')};
 
   try{if(typeof Chart!=='undefined'){if(chart)chart.destroy();
@@ -238,36 +303,75 @@ function showErr(k){document.getElementById('live').textContent='• gagal memua
   const b=document.getElementById('errbox');b.style.display='block';
   b.innerHTML='<b>Gagal memuat data.</b> Pastikan sheet masih Publish to web (CSV) aktif, lalu klik Perbarui. <small>('+k+')</small>';}
 
-// ====== Siapkan layout cetak lalu unduh ======
-function buildPrint(){
+// ====== PORTRAIT (PDF) ======
+function buildPortrait(){
   if(!LAST)return;const s=LAST;
-  document.getElementById('pPer').textContent=s.tgl;document.getElementById('pTs').textContent=s.ts;
-  document.getElementById('pPct').textContent=s.pct+'%';
-  document.getElementById('pPctSub').textContent=s.by.lengkap+' dari '+s.total+' lengkap';
-  document.getElementById('pJalan').textContent=(s.by.perbaikan+s.by.draft);
-  document.getElementById('pNote').textContent='Lengkap '+s.by.lengkap+' · Perbaikan '+s.by.perbaikan+' · Draft '+s.by.draft+' · Belum '+s.by.belum+'  (dari '+s.total+' Elemen Penilaian).';
+  document.getElementById('ppPer').textContent=s.tgl;
+  document.getElementById('ppPct').textContent=s.pct+'%';
+  document.getElementById('ppPctSub').textContent=s.by.lengkap+' dari '+s.total+' lengkap';
+  document.getElementById('ppJalan').textContent=(s.by.perbaikan+s.by.draft);
+  document.getElementById('ppBelum').textContent=s.by.belum;
+  document.getElementById('ppFoot').textContent='Lengkap '+s.by.lengkap+' · Perbaikan '+s.by.perbaikan+' · Draft '+s.by.draft+' · Belum '+s.by.belum+' (dari '+s.total+' Elemen Penilaian). Bobot kesiapan: Lengkap 100% · Perbaikan 66% · Draft 33% · Belum 0%. Sumber: checklist Google Sheet (otomatis). Dibuat '+s.ts+' WIB.';
+  // tabel per standar
+  let h='<thead><tr><th>Standar</th><th>EP</th><th>Lengkap</th><th>Perbaikan</th><th>Draft</th><th>Belum</th><th>%</th></tr></thead><tbody>';
+  s.rows.forEach(function(r){h+='<tr><td>'+r.k+'</td><td>'+r.t+'</td><td>'+r.lengkap+'</td><td>'+r.perbaikan+'</td><td>'+r.draft+'</td><td>'+r.belum+'</td><td><b>'+r.p+'%</b></td></tr>';});
+  h+='<tr class="tot"><td>TOTAL</td><td>'+s.total+'</td><td>'+s.by.lengkap+'</td><td>'+s.by.perbaikan+'</td><td>'+s.by.draft+'</td><td>'+s.by.belum+'</td><td>'+s.pct+'%</td></tr></tbody>';
+  document.getElementById('ppTable').innerHTML=h;
+  // tabel per anggota
+  let m='<tbody>';
+  s.mems.forEach(function(x){m+='<tr><td class="nm">'+x.pj+'</td><td class="ep">'+x.lengkap+'/'+x.t+' EP</td>'+
+    '<td><div class="pp-mbar"><i style="width:'+x.p+'%;background:'+cby(x.p)+'"></i></div></td>'+
+    '<td class="pc" style="color:'+cby(x.p)+'">'+x.p+'%</td></tr>';});
+  m+='</tbody>';
+  document.getElementById('ppMem').innerHTML=m;
+  // grafik batang vertikal + label nilai
+  try{if(typeof Chart!=='undefined'){if(window._pp)window._pp.destroy();
+    window._pp=new Chart(document.getElementById('ppChart'),{type:'bar',plugins:[vlabels],
+      data:{labels:s.labels,datasets:[{data:s.vals,backgroundColor:s.cols,borderRadius:3,maxBarThickness:46}]},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,layout:{padding:{top:16}},
+        plugins:{legend:{display:false}},
+        scales:{y:{min:0,max:100,ticks:{callback:function(v){return v+'%';}}},x:{ticks:{font:{size:10}},grid:{display:false}}}}});}
+  }catch(e){}
+}
+
+// ====== LANDSCAPE (JPG) — format sebelumnya ======
+function buildLand(){
+  if(!LAST)return;const s=LAST;
+  document.getElementById('plPer').textContent=s.tgl;document.getElementById('plTs').textContent=s.ts;
+  document.getElementById('plPct').textContent=s.pct+'%';
+  document.getElementById('plPctSub').textContent=s.by.lengkap+' dari '+s.total+' lengkap';
+  document.getElementById('plJalan').textContent=(s.by.perbaikan+s.by.draft);
+  document.getElementById('plNote').textContent='Lengkap '+s.by.lengkap+' · Perbaikan '+s.by.perbaikan+' · Draft '+s.by.draft+' · Belum '+s.by.belum+'  (dari '+s.total+' Elemen Penilaian).';
   let h='<thead><tr><th class="s" style="text-align:left">Standar</th><th>EP</th><th>L</th><th>P</th><th>D</th><th>B</th><th>%</th></tr></thead><tbody>';
   s.rows.forEach(function(r){h+='<tr><td class="s">'+r.k+'</td><td>'+r.t+'</td><td>'+r.lengkap+'</td><td>'+r.perbaikan+'</td><td>'+r.draft+'</td><td>'+r.belum+'</td><td><b>'+r.p+'%</b></td></tr>';});
   h+='<tr class="tot"><td class="s">TOTAL</td><td>'+s.total+'</td><td>'+s.by.lengkap+'</td><td>'+s.by.perbaikan+'</td><td>'+s.by.draft+'</td><td>'+s.by.belum+'</td><td>'+s.pct+'%</td></tr></tbody>';
-  document.getElementById('pTable').innerHTML=h;
-  try{if(typeof Chart!=='undefined'){if(window._pc)window._pc.destroy();
-    window._pc=new Chart(document.getElementById('printChart'),{type:'bar',
+  document.getElementById('plTable').innerHTML=h;
+  try{if(typeof Chart!=='undefined'){if(window._pl)window._pl.destroy();
+    window._pl=new Chart(document.getElementById('plChart'),{type:'bar',
       data:{labels:s.labels,datasets:[{data:s.vals,backgroundColor:s.cols,borderRadius:3}]},
       options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,
         plugins:{legend:{display:false}},scales:{x:{min:0,max:100,ticks:{callback:function(v){return v+'%';}}},y:{ticks:{font:{size:11}}}}}});}
   }catch(e){}
 }
+
 function unduh(fmt){
   if(!LAST){alert('Data belum termuat.');return;}
-  buildPrint();
-  setTimeout(function(){
-    html2canvas(document.getElementById('printArea'),{scale:2,backgroundColor:'#F3F1EA'}).then(function(canvas){
-      const tgl=new Date().toISOString().slice(0,10);
-      if(fmt==='jpg'){const a=document.createElement('a');a.href=canvas.toDataURL('image/jpeg',0.95);a.download='Laporan-PAP-'+tgl+'.jpg';a.click();}
-      else{const {jsPDF}=window.jspdf;const pdf=new jsPDF('l','mm','a4');
-        pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',0,0,297,210);pdf.save('Laporan-PAP-'+tgl+'.pdf');}
-    });
-  },450);
+  const tgl=new Date().toISOString().slice(0,10);
+  if(fmt==='jpg'){
+    buildLand();
+    setTimeout(function(){
+      html2canvas(document.getElementById('printLand'),{scale:2,backgroundColor:'#F3F1EA'}).then(function(canvas){
+        const a=document.createElement('a');a.href=canvas.toDataURL('image/jpeg',0.95);a.download='Laporan-PAP-'+tgl+'.jpg';a.click();});
+    },450);
+  }else{
+    buildPortrait();
+    setTimeout(function(){
+      html2canvas(document.getElementById('printPortrait'),{scale:2,backgroundColor:'#ffffff'}).then(function(canvas){
+        const {jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');
+        pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',0,0,210,297);
+        pdf.save('Laporan-PAP-'+tgl+'.pdf');});
+    },450);
+  }
 }
 
 function kirimTelegram(){const n=document.getElementById('teleNote');
