@@ -66,6 +66,21 @@
   .msg b{color:#5a3d00}
   .foot{text-align:center;color:var(--mut);font-size:11.5px;margin-top:26px}
   @media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.row .name{width:130px}}
+  @media(max-width:480px){
+    .wrap{padding:14px 12px 48px}
+    header.top{padding:18px 16px;gap:10px}
+    header.top h1{font-size:19px}
+    header.top .sub{font-size:12px}
+    .hdr-actions{width:100%}
+    .hdr-actions .btn{flex:1;justify-content:center;padding:10px 10px}
+    .kpi{padding:14px 14px}.kpi .big{font-size:32px}
+    .kpi.readi{gap:12px}
+    .ring{width:78px;height:78px}.ring .inner{width:58px;height:58px}.ring .inner b{font-size:18px}
+    .row{gap:9px}.row .name{width:108px;font-size:12px}
+    .cnt{width:40px}
+    .filters{gap:6px}.chip{padding:5px 11px;font-size:12px}
+    th,td{padding:7px 6px;font-size:12px}
+  }
   @media print{body{background:#fff}.btn,.hdr-actions .btn{display:none}.panel,.kpi{box-shadow:none;border:1px solid var(--line)}}
 </style>
 </head>
