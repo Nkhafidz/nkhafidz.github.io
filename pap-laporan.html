@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laporan Progres PAP 2027 — RSUD Saras Adyatma</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --navy:#0B2E3C; --teal:#1C7293; --teal2:#2E9CB8; --gold:#E9A23B; --ink:#17323D;
+    --mut:#5C7883; --line:#E1EAEE; --bg:#EEF3F5; --card:#FFFFFF;
+    --belum:#D9534F; --draft:#E9A23B; --perbaikan:#2E6FB0; --lengkap:#1E8E6A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+  .wrap{max-width:1060px;margin:0 auto;padding:16px 16px 60px}
+  /* toolbar */
+  .toolbar{background:var(--card);border-radius:14px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;box-shadow:0 1px 3px rgba(11,46,60,.08);margin-bottom:14px}
+  .toolbar .per{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-right:auto}
+  .toolbar .per b{color:var(--ink)}
+  .btn{border:none;border-radius:9px;padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .btn-primary{background:var(--teal);color:#fff}
+  .btn-tele{background:#2AABEE;color:#fff}
+  .btn-ghost{background:#EFF4F6;color:var(--ink)}
+  .btn:active{transform:translateY(1px)}
+  .note{font-size:12px;color:var(--mut);margin:2px 0 14px 4px}
+  .note.ok{color:var(--lengkap)}
+  .note.err{color:var(--belum)}
+  /* report card */
+  #report{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(11,46,60,.1)}
+  .band{background:linear-gradient(90deg,var(--navy),var(--teal));color:#fff;padding:16px 22px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
+  .band .t1{font-size:12px;letter-spacing:1.5px;color:#AFD4E0;font-weight:700}
+  .band .t2{font-size:21px;font-weight:800;margin-top:2px}
+  .band .meta{text-align:right;font-size:11.5px;color:#CFE2E9;line-height:1.5}
+  .pad{padding:18px 22px}
+  .grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  h3{font-size:13.5px;color:var(--navy);margin-bottom:9px;font-weight:800;letter-spacing:.2px}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{padding:6px 7px;border-bottom:1px solid var(--line);text-align:center}
+  th{color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;background:#F6F9FA}
+  td.std{text-align:left;font-weight:700;color:var(--navy)}
+  tr.total td{border-top:2px solid var(--navy);font-weight:800;background:#F6F9FA}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
+  .pbar{height:7px;border-radius:4px;background:#EAF1F4;overflow:hidden;width:54px;display:inline-block;vertical-align:middle;margin-left:4px}
+  .pbar>i{display:block;height:100%;background:var(--teal)}
+  /* KPI */
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+  .kpi{border-radius:12px;padding:14px 15px;color:#fff}
+  .kpi.k1{background:var(--navy)} .kpi.k2{background:var(--teal)}
+  .kpi .big{font-size:30px;font-weight:800;line-height:1}
+  .kpi .lab{font-size:11.5px;margin-top:5px;opacity:.9}
+  .ministat{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .ms{flex:1;min-width:90px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff}
+  .ms b{font-size:19px;display:block} .ms span{font-size:10.5px;color:var(--mut)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--mut);margin-top:8px}
+  .legend span{display:inline-flex;align-items:center}
+  .chartbox{position:relative;height:330px}
+  .foot{padding:10px 22px 16px;font-size:11px;color:var(--mut);text-align:center}
+  .msg{display:none;background:#FFF4E5;border:1px solid #F0CE95;color:#7a5200;border-radius:12px;padding:14px 16px;margin-top:14px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="toolbar">
+    <div class="per">Periode: <b id="per">s.d. —</b> <span id="live" style="margin-left:8px">• memuat…</span></div>
+    <button class="btn btn-primary" onclick="loadData()">⟳ Perbarui</button>
+    <button class="btn btn-tele" onclick="kirimTelegram()">📤 Kirim ke Telegram</button>
+    <button class="btn btn-ghost" onclick="unduh('jpg')">🖼️ Unduh JPG</button>
+    <button class="btn btn-ghost" onclick="unduh('pdf')">📄 Unduh PDF</button>
+  </div>
+  <div class="note" id="teleNote"></div>
+
+  <div id="report">
+    <div class="band">
+      <div>
+        <div class="t1">TIM PAP · RSUD SARAS ADYATMA KABUPATEN BANTUL</div>
+        <div class="t2" id="title">Laporan Progres Akreditasi PAP 2027</div>
+      </div>
+      <div class="meta">
+        Instrumen 2024 · 52 Elemen Penilaian<br>
+        Dibuat: <span id="ts">—</span>
+      </div>
+    </div>
+
+    <div class="pad">
+      <div class="kpis">
+        <div class="kpi k1"><div class="big" id="kPct">0%</div><div class="lab">Kesiapan total — <span id="kPctNote">0/52 lengkap</span></div></div>
+        <div class="kpi k2"><div class="big" id="kJalan">0</div><div class="lab">EP sedang dikerjakan (perbaikan + draft)</div></div>
+      </div>
+      <div class="ministat">
+        <div class="ms" style="border-color:#BEE3D4"><b style="color:var(--lengkap)" id="sL">0</b><span>🟢 Lengkap</span></div>
+        <div class="ms" style="border-color:#C5D8EC"><b style="color:var(--perbaikan)" id="sP">0</b><span>🔵 Perbaikan</span></div>
+        <div class="ms" style="border-color:#F0DCB0"><b style="color:var(--draft)" id="sD">0</b><span>🟡 Draft</span></div>
+        <div class="ms" style="border-color:#F2C9C7"><b style="color:var(--belum)" id="sB">0</b><span>🔴 Belum</span></div>
+      </div>
+
+      <div class="grid2">
+        <div>
+          <h3>Rekap Status per Standar</h3>
+          <table>
+            <thead><tr><th class="std" style="text-align:left">Standar</th><th>EP</th>
+              <th><span class="dot" style="background:var(--lengkap)"></span>L</th>
+              <th><span class="dot" style="background:var(--perbaikan)"></span>P</th>
+              <th><span class="dot" style="background:var(--draft)"></span>D</th>
+              <th><span class="dot" style="background:var(--belum)"></span>B</th>
+              <th>%</th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+          <div class="legend">
+            <span><span class="dot" style="background:var(--lengkap)"></span>L=Lengkap</span>
+            <span><span class="dot" style="background:var(--perbaikan)"></span>P=Perbaikan</span>
+            <span><span class="dot" style="background:var(--draft)"></span>D=Draft</span>
+            <span><span class="dot" style="background:var(--belum)"></span>B=Belum</span>
+          </div>
+        </div>
+        <div>
+          <h3>Kesiapan per Standar (%)</h3>
+          <div class="chartbox"><canvas id="chart"></canvas></div>
+          <h3 style="margin-top:14px">Progres per Anggota</h3>
+          <div id="perMem" style="font-size:12px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">Sumber data: checklist Google Sheet (otomatis) · Dashboard: www.notesme.site/PAP-2027-DASHBOARD-UNIFIED.html</div>
+  </div>
+
+  <div class="msg" id="errbox"></div>
+</div>
+
+<script>
+// ====== KONFIG ======
+const PUB_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSoxwVGRmTVzdjJOKGQ45jnwVwdAV7_1iF2xTSuMusJO6cgZ03eJWrigJouhMhr1BG72HznBT80SoF-/pub?gid=1338236313&single=true&output=csv";
+// (opsional) URL Web App Apps Script untuk tombol "Kirim ke Telegram".
+// Deploy skrip sebagai Web App (Anyone), tempel URL /exec di sini:
+const GAS_SEND_URL = "";
+
+const STATUS={lengkap:{w:1,col:'#1E8E6A'},perbaikan:{w:.66,col:'#2E6FB0'},draft:{w:.33,col:'#E9A23B'},belum:{w:0,col:'#D9534F'}};
+const STD_ORDER=["PAP 1","PAP 1.1","PAP 1.2","PAP 2","PAP 2.1","PAP 2.2","PAP 2.3","PAP 2.4","PAP 2.5","PAP 2.6","PAP 2.7","PAP 3","PAP 4","PAP 5"];
+function norm(s){s=(s||'').toString().trim().toLowerCase();return STATUS[s]?s:'belum';}
+let ROWS=[], chart=null;
+
+function loadData(){
+  document.getElementById('live').textContent='• memuat…';
+  fetch(PUB_CSV+'&_='+Date.now(),{cache:'no-store'})
+   .then(function(r){if(!r.ok)throw new Error('http '+r.status);return r.text();})
+   .then(parseAndRender).catch(function(e){showErr(e.message||'network');});
+}
+function parseCSV(t){const R=[];let row=[],f='',q=false;for(let i=0;i<t.length;i++){const c=t[i];
+  if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+  else{if(c==='"')q=true;else if(c===','){row.push(f);f='';}else if(c==='\n'){row.push(f);R.push(row);row=[];f='';}else if(c!=='\r')f+=c;}}
+  if(f.length||row.length){row.push(f);R.push(row);}return R;}
+
+function parseAndRender(txt){
+  const g=parseCSV(txt).filter(function(r){return r.some(function(c){return(c||'').trim()!=='';});});
+  if(g.length<2){showErr('empty');return;}
+  const lab=g[0].map(function(h){return(h||'').trim().toLowerCase();});
+  function ix(n,fb){const i=lab.indexOf(n);return i>=0?i:fb;}
+  const iStd=ix('standar',1),iEp=ix('ep',2),iPj=ix('penanggung jawab',9),iSt=ix('status',11);
+  ROWS=[];
+  for(let r=1;r<g.length;r++){const row=g[r];const std=(row[iStd]||'').trim();if(!std)continue;
+    ROWS.push({std:std,ep:(row[iEp]||'').trim(),pj:(row[iPj]||'-').trim(),st:norm(row[iSt])});}
+  if(!ROWS.length){showErr('empty');return;}
+  document.getElementById('errbox').style.display='none';
+  document.getElementById('live').textContent='• data termuat ('+ROWS.length+' EP)';
+  render();
+}
+
+function render(){
+  const total=ROWS.length; const by={lengkap:0,perbaikan:0,draft:0,belum:0}; let score=0;
+  const std={}, mem={};
+  ROWS.forEach(function(r){by[r.st]++;score+=STATUS[r.st].w;
+    if(!std[r.std])std[r.std]={t:0,s:0,lengkap:0,perbaikan:0,draft:0,belum:0};
+    std[r.std].t++;std[r.std].s+=STATUS[r.st].w;std[r.std][r.st]++;
+    if(!mem[r.pj])mem[r.pj]={t:0,s:0};mem[r.pj].t++;mem[r.pj].s+=STATUS[r.st].w;});
+  const pct=Math.round(score/total*100);
+  const now=new Date(); const tgl=now.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('per').textContent='s.d. '+tgl;
+  document.getElementById('ts').textContent=now.toLocaleString('id-ID');
+  document.getElementById('kPct').textContent=pct+'%';
+  document.getElementById('kPctNote').textContent=by.lengkap+'/'+total+' lengkap';
+  document.getElementById('kJalan').textContent=(by.perbaikan+by.draft);
+  document.getElementById('sL').textContent=by.lengkap;
+  document.getElementById('sP').textContent=by.perbaikan;
+  document.getElementById('sD').textContent=by.draft;
+  document.getElementById('sB').textContent=by.belum;
+
+  // table
+  const tb=document.getElementById('tbody'); tb.innerHTML='';
+  const labels=[],vals=[],cols=[];
+  STD_ORDER.filter(function(k){return std[k];}).forEach(function(k){
+    const x=std[k]; const p=Math.round(x.s/x.t*100);
+    labels.push(k);vals.push(p);cols.push(p>=75?'#1E8E6A':p>=50?'#2E9CB8':p>=25?'#E9A23B':'#D9534F');
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td class="std">'+k+'</td><td>'+x.t+'</td><td>'+x.lengkap+'</td><td>'+x.perbaikan+'</td><td>'+x.draft+'</td><td>'+x.belum+'</td>'+
+      '<td><b>'+p+'%</b><span class="pbar"><i style="width:'+p+'%;background:'+cols[cols.length-1]+'"></i></span></td>';
+    tb.appendChild(tr);
+  });
+  const tr=document.createElement('tr'); tr.className='total';
+  tr.innerHTML='<td class="std">TOTAL</td><td>'+total+'</td><td>'+by.lengkap+'</td><td>'+by.perbaikan+'</td><td>'+by.draft+'</td><td>'+by.belum+'</td><td>'+pct+'%</td>';
+  tb.appendChild(tr);
+
+  // per anggota
+  const el=document.getElementById('perMem'); el.innerHTML='';
+  Object.keys(mem).sort().forEach(function(pj){const x=mem[pj];const p=Math.round(x.s/x.t*100);
+    const row=document.createElement('div'); row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:6px';
+    row.innerHTML='<div style="width:150px;font-weight:600">'+pj+'</div>'+
+      '<div style="flex:1;height:14px;background:#EAF1F4;border-radius:4px;overflow:hidden"><div style="height:100%;width:'+p+'%;background:#1C7293"></div></div>'+
+      '<div style="width:34px;text-align:right;color:#5C7883">'+p+'%</div>';
+    el.appendChild(row);});
+
+  // chart (grafik — aman bila pustaka gagal dimuat)
+  try{
+    if(typeof Chart!=='undefined'){
+      if(chart)chart.destroy();
+      chart=new Chart(document.getElementById('chart'),{type:'bar',
+        data:{labels:labels,datasets:[{data:vals,backgroundColor:cols,borderRadius:4}]},
+        options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x+'%';}}}},
+          scales:{x:{min:0,max:100,ticks:{callback:function(v){return v+'%';}}},y:{ticks:{font:{size:11}}}}}});
+    }
+  }catch(e){ /* grafik dilewati bila pustaka tidak tersedia */ }
+}
+
+function showErr(k){document.getElementById('live').textContent='• gagal memuat';
+  const b=document.getElementById('errbox');b.style.display='block';
+  b.innerHTML='<b>Gagal memuat data.</b> Pastikan sheet masih Publish to web (CSV) aktif, lalu klik Perbarui. <small>('+k+')</small>';}
+
+// ====== Unduh JPG / PDF ======
+function unduh(fmt){
+  const node=document.getElementById('report');
+  html2canvas(node,{scale:2,backgroundColor:'#ffffff'}).then(function(canvas){
+    const tgl=new Date().toISOString().slice(0,10);
+    if(fmt==='jpg'){
+      const a=document.createElement('a');a.href=canvas.toDataURL('image/jpeg',0.95);
+      a.download='Laporan-PAP-'+tgl+'.jpg';a.click();
+    }else{
+      const {jsPDF}=window.jspdf; const img=canvas.toDataURL('image/jpeg',0.95);
+      const pdf=new jsPDF('p','mm','a4'); const w=210, h=canvas.height*w/canvas.width;
+      pdf.addImage(img,'JPEG',0,0,w,h); pdf.save('Laporan-PAP-'+tgl+'.pdf');
+    }
+  });
+}
+
+// ====== Kirim ke Telegram ======
+function kirimTelegram(){
+  const n=document.getElementById('teleNote');
+  if(GAS_SEND_URL){
+    window.open(GAS_SEND_URL+'?send=laporan','_blank');
+    n.className='note ok'; n.textContent='Permintaan kirim laporan dikirim ke bot — cek grup Telegram.';
+  }else{
+    n.className='note'; n.innerHTML='Tip: ketik <b>/laporan</b> di grup Telegram — bot langsung mengirim laporan + grafik. '+
+      '(Untuk tombol ini berfungsi otomatis, isi GAS_SEND_URL di kode dengan URL Web App Apps Script.)';
+    unduh('jpg');
+  }
+}
+loadData();
+</script>
+</body>
+</html>
