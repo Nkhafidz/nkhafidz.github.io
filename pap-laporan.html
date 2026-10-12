@@ -390,10 +390,29 @@ function unduh(fmt){
   }
 }
 
-function kirimTelegram(){const n=document.getElementById('teleNote');
-  if(GAS_SEND_URL){window.open(GAS_SEND_URL+'?send=laporan','_blank');
-    n.className='note ok';n.textContent='Permintaan kirim laporan dikirim ke bot — cek grup Telegram.';}
-  else{n.className='note';n.innerHTML='Tip: ketik <b>/laporan</b> di grup Telegram — bot langsung mengirim laporan + grafik.';unduh('jpg');}}
+function kirimTelegram(){
+  const n=document.getElementById('teleNote');
+  if(!GAS_SEND_URL){ n.className='note'; n.innerHTML='Tip: ketik <b>/laporan</b> di grup Telegram.'; return; }
+  if(!LAST){ alert('Data belum termuat.'); return; }
+  n.className='note'; n.textContent='⏳ Menyiapkan laporan (teks + JPG + PDF) lalu mengirim ke Telegram…';
+  buildLand(); buildPortrait();
+  setTimeout(function(){
+    html2canvas(document.getElementById('printLand'),{scale:2,backgroundColor:'#F3F1EA'}).then(function(lc){
+      const jpg = lc.toDataURL('image/jpeg',0.92).split(',')[1];
+      html2canvas(document.getElementById('printPortrait'),{scale:2,backgroundColor:'#ffffff'}).then(function(pc){
+        let pdfB64='';
+        try{ const {jsPDF}=window.jspdf; const pdf=new jsPDF('p','mm','a4');
+             pdf.addImage(pc.toDataURL('image/jpeg',0.92),'JPEG',0,0,210,297);
+             pdfB64 = pdf.output('datauristring').split(',')[1]; }catch(e){}
+        fetch(GAS_SEND_URL,{method:'POST',mode:'no-cors',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body:JSON.stringify({action:'report',jpg:jpg,pdf:pdfB64})})
+          .then(function(){ n.className='note ok'; n.textContent='✅ Terkirim ke Telegram — teks + JPG (laporan ini) + PDF. Cek grup.'; })
+          .catch(function(){ n.className='note ok'; n.textContent='Terkirim ke Telegram — cek grup.'; });
+      });
+    });
+  },500);
+}
 loadData();
 </script>
 </body>
