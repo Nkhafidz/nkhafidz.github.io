@@ -595,12 +595,26 @@ const links = [
     description: "Register rawat inap untuk pemantauan casemix."
   },
   {
+    label: "Dashboard PAP 2027",
+    category: "RSUD",
+    section: "Akreditasi",
+    url: "https://nkhafidz.github.io/PAP-2027-DASHBOARD-UNIFIED.html",
+    description: "Pemantauan real-time kesiapan akreditasi PAP 2027: % kesiapan, per standar, dan progres per anggota — otomatis dari checklist Google Sheets."
+  },
+  {
+    label: "Laporan Progres PAP 2027",
+    category: "RSUD",
+    section: "Akreditasi",
+    url: "https://nkhafidz.github.io/pap-laporan.html",
+    description: "Laporan progres PAP 2027: rekap status per standar, KPI, grafik, dan unduh JPG/PDF atau kirim ke Telegram — otomatis dari checklist."
+  },
+  {
     label: "Akreditasi 2027",
     category: "RSUD",
     section: "Akreditasi",
     url: "https://drive.google.com/drive/folders/1VFOqId31Ph-MfkOFK-qCLJlAVXEHufLd?usp=sharing",
     sensitive: true,
-    description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma."
+    description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma (2027)."
   },
   {
     label: "Akreditasi 2027 Pusat",
@@ -608,7 +622,7 @@ const links = [
     section: "Akreditasi",
     url: "https://drive.google.com/drive/folders/1O-FExBMtjsEzu1csi1rE2EipDDWpC5wl",
     sensitive: true,
-    description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma."
+    description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma (pusat)."
   },
   {
     label: "Akreditasi 2023",
@@ -616,14 +630,7 @@ const links = [
     section: "Akreditasi",
     url: "https://drive.google.com/drive/folders/1Sjq9XWMS-Em6dFziSTrQqGBXRfwr3Vu0?usp=sharing",
     sensitive: true,
-    description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma."
-  },
-  {
-    label: "Dashboard PAP 2027",
-    category: "RSUD",
-    section: "Akreditasi",
-    url: "https://nkhafidz.github.io/PAP-2027-DASHBOARD-UNIFIED.html",
-    description: "Real-time tracking kesiapan akreditasi PAP 2027. Menggabungkan planning strategy, timeline, risk register, dan monitoring status implementasi dari Google Sheets."
+    description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma (2023)."
   },
   {
     label: "Regulasi RSUD",
@@ -631,7 +638,7 @@ const links = [
     section: "Akreditasi",
     url: "https://drive.google.com/drive/folders/1poTfAlAwz-XUPvyXCH-JEHtlJPHhpIWv",
     sensitive: true,
-    description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma."
+    description: "Folder regulasi/dokumen RSUD Saras Adyatma."
   }
 ];
 
