@@ -10,7 +10,19 @@
   <link rel="icon" type="image/svg+xml" href="/asisten/icon.svg" />
   <link rel="apple-touch-icon" href="/asisten/icon-192.png" />
   <meta name="apple-mobile-web-app-title" content="Asisten" />
+  <script>
+    (function () {
+      var fromIcon = /[?&]app=1/.test(location.search) ||
+        (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+        window.navigator.standalone === true;
+      if (fromIcon) {
+        document.documentElement.className = "jump";
+        location.replace("https://claude.ai/artifact/DJFCwei6B1Re71JEYeKg7T");
+      }
+    })();
+  </script>
   <style>
+    html.jump main { display: none; }
     :root { --bg: #10222e; --ink: #e5eef2; --muted: #93a7b1; --accent: #3cc3a6; }
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
@@ -43,9 +55,7 @@
       var fromIcon = /[?&]app=1/.test(location.search) ||
         (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
         window.navigator.standalone === true;
-      if (fromIcon) {
-        location.replace(TARGET);
-      } else {
+      if (!fromIcon) {
         document.getElementById("status").textContent = "Pasang ikon ini di layar utama HP agar asisten terbuka dengan sekali ketuk.";
         document.getElementById("howto").hidden = false;
       }
