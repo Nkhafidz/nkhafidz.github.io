@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Asisten dr. Khafidz</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#10222e" />
+  <link rel="manifest" href="/asisten/manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="/asisten/icon.svg" />
+  <link rel="apple-touch-icon" href="/asisten/icon-192.png" />
+  <meta name="apple-mobile-web-app-title" content="Asisten" />
+  <style>
+    :root { --bg: #10222e; --ink: #e5eef2; --muted: #93a7b1; --accent: #3cc3a6; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body { background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      display: grid; place-items: center; text-align: center;
+      padding: max(24px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); }
+    main { max-width: 360px; display: grid; gap: 16px; justify-items: center; }
+    img { width: 96px; height: 96px; }
+    h1 { margin: 0; font-size: 1.4rem; }
+    p { margin: 0; color: var(--muted); line-height: 1.5; }
+    a.btn { display: inline-block; background: var(--accent); color: #06231d; font-weight: 700; text-decoration: none; padding: 12px 22px; border-radius: 14px; }
+    ol { text-align: left; color: var(--muted); margin: 0; padding-left: 1.2em; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="/asisten/icon-192.png" alt="" />
+    <h1>Asisten dr. Khafidz</h1>
+    <p id="status">Membuka asisten…</p>
+    <a class="btn" id="go" href="https://claude.ai/artifact/DJFCwei6B1Re71JEYeKg7T">Buka asisten</a>
+    <ol id="howto" hidden>
+      <li>Ketuk menu ⋮ di kanan atas Chrome</li>
+      <li>Pilih <b>Tambahkan ke layar utama</b> (atau <b>Instal aplikasi</b>)</li>
+      <li>Ikon logo K akan muncul di layar HP</li>
+    </ol>
+  </main>
+  <script>
+    (function () {
+      var TARGET = "https://claude.ai/artifact/DJFCwei6B1Re71JEYeKg7T";
+      var fromIcon = /[?&]app=1/.test(location.search) ||
+        (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+        window.navigator.standalone === true;
+      if (fromIcon) {
+        location.replace(TARGET);
+      } else {
+        document.getElementById("status").textContent = "Pasang ikon ini di layar utama HP agar asisten terbuka dengan sekali ketuk.";
+        document.getElementById("howto").hidden = false;
+      }
+    })();
+  </script>
+</body>
+</html>
