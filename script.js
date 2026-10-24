@@ -507,6 +507,13 @@ const links = [
     description: "Portal e-surat Bantul."
   },
   {
+    label: "Mail Bantul",
+    category: "RSUD",
+    section: "Kinerja",
+    url: "https://mail.bantulkab.go.id/",
+    description: "Portal email Pemkab Bantul."
+  },
+  {
     label: "Administrasi Kepegawaian",
     category: "RSUD",
     section: "Kinerja",
