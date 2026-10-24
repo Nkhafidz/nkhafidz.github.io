@@ -145,11 +145,11 @@ const links = [
     description: "Website Familia Medika."
   },
   {
-    label: "Publikasi — G Sheet",
+    label: "Kendali Publikasi Jurnal",
     category: "Personal",
     section: "Publikasi",
-    url: "https://docs.google.com/spreadsheets/d/1ieois_AREkz5-yw-2grprjrGRQJ4THCTp_0aoKIkwVU/edit?usp=sharing",
-    description: "Tracking publikasi."
+    url: "https://claude.ai/artifact/H2iYuNtDZV92XBX9yMiP6e",
+    description: "Progres 3 naskah jurnal: checklist, tugas berikutnya, dan pengingat tenggat."
   },
   {
     label: "Publikasi Jurnal — On Proses",
