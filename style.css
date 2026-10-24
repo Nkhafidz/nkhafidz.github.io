@@ -822,6 +822,11 @@ a {
   margin-top: 2px;
 }
 
+/* Atribut hidden harus selalu menang atas display bawaan komponen (grid/flex/block) */
+[hidden] {
+  display: none !important;
+}
+
 .fp-icon-btn {
   display: flex;
   align-items: center;
@@ -864,16 +869,15 @@ a {
 
 .fp-prompt {
   width: min(100%, 460px);
-  margin: 18px auto 0;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
+  margin: 8px auto 0;
   text-align: center;
 }
 
 .fp-prompt-text {
   color: var(--text);
-  margin: 0 0 12px;
-  font-size: 0.95rem;
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .fp-prompt-actions {

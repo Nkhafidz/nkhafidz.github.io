@@ -127,6 +127,7 @@
       const fpEnableBtn = document.getElementById("fpEnableBtn");
       const fpSkipBtn = document.getElementById("fpSkipBtn");
       const fpMessage = document.getElementById("fpMessage");
+      const loginSubtitle = document.getElementById("loginSubtitle");
 
       if (isAuthenticated()) {
         window.location.replace(next);
@@ -152,8 +153,7 @@
             window.location.replace(next);
           } catch (err) {
             const name = (err && err.name) || "Error";
-            const detail = (err && err.message) || "tidak ada detail";
-            message.textContent = `Verifikasi fingerprint gagal — ${name}: ${detail}. Silakan pakai password, atau daftar ulang fingerprint di bawah.`;
+            message.textContent = `Fingerprint gagal (${name}). Pakai password, atau daftar ulang.`;
             message.className = "auth-message error";
             fpLoginBtn.disabled = false;
             if (fpResetBtn) fpResetBtn.hidden = false;
@@ -166,7 +166,7 @@
           window.localStorage.removeItem(FP_ID_KEY);
           if (fpLoginBtn) fpLoginBtn.hidden = true;
           fpResetBtn.hidden = true;
-          message.textContent = "Fingerprint lama sudah dihapus dari perangkat ini. Masuk dengan password untuk mendaftar ulang.";
+          message.textContent = "Fingerprint dihapus dari perangkat ini. Masuk dengan password untuk mendaftar ulang.";
           message.className = "auth-message";
         });
       }
@@ -199,6 +199,7 @@
           if (offerFp) {
             message.textContent = "";
             form.hidden = true;
+            if (loginSubtitle) loginSubtitle.hidden = true;
             fpPrompt.hidden = false;
             return;
           }
@@ -219,7 +220,7 @@
         fpEnableBtn.addEventListener("click", async () => {
           fpEnableBtn.disabled = true;
           if (fpMessage) {
-            fpMessage.textContent = "Ikuti instruksi sensor fingerprint / Face ID di perangkat...";
+            fpMessage.textContent = "Verifikasi di sensor perangkat...";
             fpMessage.className = "auth-message";
           }
           try {
@@ -228,8 +229,7 @@
           } catch (err) {
             if (fpMessage) {
               const name = (err && err.name) || "Error";
-              const detail = (err && err.message) || "tidak ada detail";
-              fpMessage.textContent = `Gagal mengaktifkan fingerprint — ${name}: ${detail}. Tap "Aktifkan Fingerprint" untuk coba lagi, atau "Lewati" untuk lanjut tanpa fingerprint.`;
+              fpMessage.textContent = `Gagal mengaktifkan (${name}). Coba lagi, atau lewati.`;
               fpMessage.className = "auth-message error";
             }
             fpEnableBtn.disabled = false;
