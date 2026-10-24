@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kendali Publikasi Jurnal — NotesMe</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='22' fill='%230f172a'/%3E%3Cpath d='M30 22h28l12 12v40H30z' fill='%23f8fafc'/%3E%3Cpath d='M38 46l7 7 13-14' fill='none' stroke='%2338bdf8' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <script src="../auth.js"></script>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    .site-header.inner-header { padding-bottom: 0; }
+    main.section { padding-top: 12px; }
+    .pb-wrap { display: grid; gap: 1.25rem; }
+    .pb-panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; }
+    .pb-panel h2 { margin: 0 0 .75rem; font-size: 1.15rem; }
+    .pb-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: .75rem; }
+    .pb-head h1 { margin: 0; font-size: clamp(1.5rem, 4vw, 2.1rem); line-height: 1.15; }
+    .pb-head p { margin: .25rem 0 0; color: var(--muted); }
+    .pb-btn { border: 1px solid var(--line); background: var(--card-strong); color: var(--text); border-radius: 12px; padding: .5rem .85rem; font: inherit; cursor: pointer; }
+    .pb-btn:hover, .pb-btn:focus-visible { border-color: var(--primary); outline: none; }
+    .pb-btn.main { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 600; }
+    .pb-btn:disabled { opacity: .55; cursor: wait; }
+
+    .pb-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+    .pb-stat { border: 1px solid var(--line); background: var(--card); border-radius: 18px; padding: .9rem 1rem; text-align: left; color: var(--text); font: inherit; cursor: pointer; display: grid; gap: .1rem; }
+    .pb-stat b { font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+    .pb-stat span { color: var(--muted); font-size: .85rem; }
+    .pb-stat.late b { color: var(--danger); } .pb-stat.soon b { color: var(--accent); } .pb-stat.ok b { color: #34d399; }
+    .pb-stat.ok { cursor: default; }
+    .pb-stat[aria-pressed="true"] { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
+    .pb-stat:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+    .pb-due { display: grid; gap: .45rem; }
+    .pb-due-item { display: grid; grid-template-columns: auto 1fr auto; gap: .6rem; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .55rem .8rem; }
+    .pb-due-item .t { min-width: 0; overflow-wrap: anywhere; }
+
+    .pb-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 1rem; align-items: start; }
+    .pb-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem; display: grid; gap: .85rem; min-width: 0; }
+    .pb-top { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+    .pb-code { font-weight: 700; font-size: .8rem; color: var(--primary); border: 1px solid var(--primary); border-radius: 8px; padding: .05rem .5rem; }
+    .pb-rank { font-size: .8rem; color: var(--muted); }
+    .pb-card h3 { margin: 0; font-size: 1.02rem; line-height: 1.35; }
+    .pb-target { margin-top: -.45rem; font-size: .85rem; color: var(--muted); }
+    .pb-pipe { display: flex; gap: .3rem; }
+    .pb-pipe div { flex: 1; min-width: 0; display: grid; gap: .25rem; }
+    .pb-pipe i { display: block; height: 6px; border-radius: 3px; background: var(--line); }
+    .pb-pipe i.full { background: var(--primary); }
+    .pb-pipe small { font-size: .68rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pb-prog { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .pb-prog b { color: var(--text); }
+    .pb-next { background: var(--card-strong); border-radius: 14px; padding: .65rem .8rem; display: grid; gap: .25rem; }
+    .pb-next .l { font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .pb-next .n { font-weight: 600; overflow-wrap: anywhere; }
+    .pill { display: inline-block; font-size: .75rem; border: 1px solid var(--line); border-radius: 999px; padding: .05rem .55rem; color: var(--muted); white-space: nowrap; }
+    .pill.late { color: var(--danger); border-color: var(--danger); }
+    .pill.soon { color: var(--accent); border-color: var(--accent); }
+    .pill.done { color: #34d399; border-color: #34d399; }
+    .pb-toggle { justify-self: start; }
+    .pb-stage h4 { margin: .4rem 0 .2rem; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .pb-item { display: flex; gap: .6rem; align-items: flex-start; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+    .pb-item:last-child { border-bottom: 0; }
+    .pb-item input[type=checkbox] { margin-top: .2rem; width: 1.15rem; height: 1.15rem; accent-color: var(--primary); flex: none; cursor: pointer; }
+    .pb-item .txt { flex: 1; min-width: 0; display: grid; gap: .3rem; }
+    .pb-item label { cursor: pointer; overflow-wrap: anywhere; }
+    .pb-item.done label { text-decoration: line-through; color: var(--muted); }
+    .pb-meta { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; font-size: .78rem; color: var(--muted); }
+    .pb-meta input[type=date] { font: inherit; font-size: .78rem; color: var(--text); background: var(--bg-soft); border: 1px solid var(--line); border-radius: 8px; padding: .05rem .35rem; }
+    .pb-del { background: none; border: 0; color: var(--muted); font: inherit; font-size: .78rem; text-decoration: underline; cursor: pointer; padding: 0; }
+    .pb-del:hover, .pb-del:focus-visible { color: var(--danger); }
+    .pb-add { display: grid; gap: .5rem; border-top: 1px dashed var(--line); padding-top: .75rem; }
+    .pb-add .row { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .pb-add input, .pb-add select, .pb-form input { font: inherit; color: var(--text); background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: .5rem .7rem; min-width: 0; }
+    .pb-add input[type=text] { flex: 1 1 200px; }
+    .pb-form { display: grid; gap: .75rem; }
+    .pb-form label { display: grid; gap: .3rem; font-size: .85rem; color: var(--muted); }
+    .pb-msg { color: var(--muted); font-size: .9rem; }
+    .pb-msg.err { color: var(--danger); }
+    [hidden] { display: none !important; }
+    @media (max-width: 560px) { .pb-stats { grid-template-columns: 1fr; } .pb-stat { display: flex; align-items: baseline; gap: .6rem; } }
+  </style>
+</head>
+<body>
+  <div class="bg-orb orb-one"></div>
+  <div class="bg-orb orb-two"></div>
+  <div class="bg-grid"></div>
+
+  <header class="site-header inner-header" id="top">
+    <nav class="nav container" aria-label="Navigasi utama">
+      <a class="brand" href="../" aria-label="NotesMe Home">
+        <span class="brand-mark">N</span>
+        <span class="brand-text">NotesMe</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navLinks">☰</button>
+      <div class="nav-links" id="navLinks">
+        <a href="../#menu">Menu</a>
+        <a href="../agenda/">Agenda</a>
+        <a href="../jadwal/">Jadwal</a>
+        <a href="../personal/" class="active">Personal</a>
+        <a href="../mars/">M.A.R.S</a>
+        <a href="../sgh/">SGH</a>
+        <a href="../family/">Family</a>
+        <a href="../rsud/">RSUD</a>
+        <button class="logout-button" type="button" data-logout>Keluar</button>
+        <button class="theme-toggle" type="button" id="themeToggle" aria-label="Ubah tema">☾</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container section">
+    <div class="pb-wrap">
+      <div class="pb-head">
+        <div>
+          <h1>Kendali Publikasi Jurnal</h1>
+          <p id="today"></p>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <a class="pb-btn" href="https://drive.google.com/drive/folders/1gTnl5YRL2gP0CbvIeNH5XHg6sk4mAAJi?usp=sharing" target="_blank" rel="noopener">Folder draft ↗</a>
+          <button class="pb-btn" type="button" id="reload">Muat ulang</button>
+          <button class="pb-btn" type="button" id="resetSetup">Pengaturan</button>
+        </div>
+      </div>
+
+      <section class="pb-panel" id="setupPanel" hidden>
+        <h2>Hubungkan ke Google Sheet</h2>
+        <p class="pb-msg">Masukkan URL Web App Apps Script "Data Kendali Publikasi" dan PIN-nya. Cukup sekali di setiap perangkat.</p>
+        <form class="pb-form" id="setupForm">
+          <label>URL Web App
+            <input id="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" required />
+          </label>
+          <label>PIN
+            <input id="pin" type="password" autocomplete="current-password" required />
+          </label>
+          <div><button class="pb-btn main" type="submit">Simpan dan muat</button></div>
+        </form>
+        <p class="pb-msg" id="setupMsg"></p>
+      </section>
+
+      <div id="mainArea" hidden>
+        <div class="pb-wrap">
+          <section class="pb-stats" aria-label="Pengingat">
+            <button class="pb-stat late" id="sLate" type="button" aria-pressed="false"><b id="nLate">–</b><span>tugas terlambat</span></button>
+            <button class="pb-stat soon" id="sSoon" type="button" aria-pressed="false"><b id="nSoon">–</b><span>tenggat 7 hari ke depan</span></button>
+            <div class="pb-stat ok"><b id="nDone">–</b><span>tugas selesai</span></div>
+          </section>
+          <div class="pb-due" id="dueList" hidden></div>
+          <p class="pb-msg" id="msg">Memuat data…</p>
+          <section class="pb-cards" id="cards"></section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../script.js"></script>
+  <script>
+  (() => {
+    "use strict";
+    const DEFAULT_API = ""; // isi URL Web App di sini agar tiap perangkat cukup memasukkan PIN
+    const K_API = "notesme_pub_api", K_PIN = "notesme_pin";
+    const $ = id => document.getElementById(id);
+    const store = {
+      get: k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } },
+      set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
+      del: k => { try { localStorage.removeItem(k); } catch {} }
+    };
+    const MS = 86400000, pad = n => String(n).padStart(2, "0");
+    const todayD = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
+    const iso = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+    const parse = s => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ""); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; };
+    const BLN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+    const HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+    const fmt = s => { const d = parse(s); return d ? d.getDate() + " " + BLN[d.getMonth()] + " " + d.getFullYear() : ""; };
+    const t0 = todayD();
+    $("today").textContent = HARI[t0.getDay()] + ", " + t0.getDate() + " " + BLN[t0.getMonth()] + " " + t0.getFullYear();
+
+    let journals = [], tasks = [], filter = null;
+    const open = new Set((() => { try { return JSON.parse(localStorage.getItem("notesme_pub_open") || "[]"); } catch { return []; } })());
+    const saveOpen = () => { try { localStorage.setItem("notesme_pub_open", JSON.stringify([...open])); } catch {} };
+
+    async function api(action, data = {}) {
+      const url = store.get(K_API) || DEFAULT_API;
+      let text;
+      try {
+        const res = await fetch(url, { method: "POST", body: JSON.stringify({ action, pin: store.get(K_PIN), ...data }) });
+        text = await res.text();
+      } catch { throw new Error("Tidak bisa menghubungi Web App. Pastikan akses deployment \"Anyone\" dan URL berakhiran /exec."); }
+      let out;
+      try { out = JSON.parse(text); } catch { throw new Error("Web App tidak mengembalikan data. Periksa izin (Authorize) dan akses \"Anyone\"."); }
+      if (!out.ok) throw new Error(out.error || "Permintaan gagal.");
+      return out;
+    }
+
+    function state(t) {
+      if (t.done) return { k: "done", txt: "selesai" + (t.doneAt ? " " + fmt(t.doneAt) : "") };
+      const d = parse(t.due); if (!d) return { k: "none", txt: "belum dijadwal" };
+      const n = Math.round((d - t0) / MS);
+      if (n < 0) return { k: "late", txt: "lewat " + (-n) + " hari" };
+      if (n === 0) return { k: "soon", txt: "hari ini" };
+      if (n <= 7) return { k: "soon", txt: n + " hari lagi" };
+      return { k: "ok", txt: n + " hari lagi" };
+    }
+    function el(tag, attrs, ...kids) {
+      const e = document.createElement(tag);
+      for (const k in (attrs || {})) { if (k === "class") e.className = attrs[k]; else e.setAttribute(k, attrs[k]); }
+      kids.flat().forEach(c => { if (c != null) e.append(c.nodeType ? c : document.createTextNode(c)); });
+      return e;
+    }
+    const msg = (t, err) => { $("msg").textContent = t || ""; $("msg").className = "pb-msg" + (err ? " err" : ""); $("msg").hidden = !t; };
+
+    async function save(t, patch) {
+      const before = { ...t };
+      Object.assign(t, patch); render();
+      try { await api("update", { id: t.id, patch: { selesai: t.done, tgl_selesai: t.doneAt || "", target: t.due || "" } }); msg(""); }
+      catch (e) { Object.assign(t, before); render(); msg("Gagal menyimpan: " + e.message, true); }
+    }
+
+    function render() {
+      const late = tasks.filter(t => state(t).k === "late"), soon = tasks.filter(t => state(t).k === "soon"), done = tasks.filter(t => t.done);
+      $("nLate").textContent = late.length; $("nSoon").textContent = soon.length; $("nDone").textContent = done.length;
+      $("sLate").setAttribute("aria-pressed", filter === "late"); $("sSoon").setAttribute("aria-pressed", filter === "soon");
+      const dl = $("dueList"); dl.replaceChildren();
+      const pick = filter === "late" ? late : filter === "soon" ? soon : null;
+      dl.hidden = !pick;
+      if (pick) {
+        if (!pick.length) dl.append(el("p", { class: "pb-msg" }, "Tidak ada tugas di kategori ini."));
+        [...pick].sort((a, b) => (a.due || "").localeCompare(b.due || "")).forEach(t => {
+          const s = state(t);
+          dl.append(el("div", { class: "pb-due-item" }, el("span", { class: "pb-code" }, t.journal), el("span", { class: "t" }, t.title), el("span", { class: "pill " + s.k }, fmt(t.due) + " · " + s.txt)));
+        });
+      }
+
+      const wrap = $("cards"); wrap.replaceChildren();
+      journals.forEach(j => {
+        const jt = tasks.filter(t => t.journal === j.id).sort((a, b) => a.order - b.order);
+        const nDone = jt.filter(t => t.done).length, pct = jt.length ? Math.round(nDone / jt.length * 100) : 0;
+        const stages = [...new Set(jt.map(t => t.stage))];
+        const next = jt.find(t => !t.done);
+        const pipe = el("div", { class: "pb-pipe", "aria-label": "Tahapan" }, stages.map(s => el("div", { title: s },
+          el("i", { class: jt.filter(t => t.stage === s).every(t => t.done) ? "full" : "" }), el("small", null, s.replace(/^\d+\.\s*/, "")))));
+        let nextBox;
+        if (next) { const s = state(next); nextBox = el("div", { class: "pb-next" }, el("span", { class: "l" }, "Tugas berikutnya"), el("span", { class: "n" }, next.title), el("span", null, el("span", { class: "pill " + s.k }, next.due ? fmt(next.due) + " · " + s.txt : s.txt))); }
+        else nextBox = el("div", { class: "pb-next" }, el("span", { class: "n" }, "Semua tugas selesai."));
+
+        const isOpen = open.has(j.id);
+        const list = el("div", { id: "list-" + j.id }); list.hidden = !isOpen;
+        stages.forEach(s => {
+          const box = el("div", { class: "pb-stage" }, el("h4", null, s));
+          jt.filter(t => t.stage === s).forEach(t => {
+            const st = state(t), cid = "cb-" + t.id;
+            const cb = el("input", { type: "checkbox", id: cid }); cb.checked = t.done;
+            cb.addEventListener("change", () => save(t, { done: cb.checked, doneAt: cb.checked ? iso(todayD()) : "" }));
+            const dt = el("input", { type: "date", "aria-label": "Target tanggal" }); dt.value = t.due || "";
+            dt.addEventListener("change", () => save(t, { due: dt.value || "" }));
+            const del = el("button", { class: "pb-del", type: "button" }, "hapus"); let armed = false;
+            del.addEventListener("click", async () => {
+              if (!armed) { armed = true; del.textContent = "yakin hapus?"; setTimeout(() => { armed = false; del.textContent = "hapus"; }, 3000); return; }
+              try { await api("delete", { id: t.id }); tasks = tasks.filter(x => x !== t); render(); } catch (e) { msg("Gagal menghapus: " + e.message, true); }
+            });
+            box.append(el("div", { class: "pb-item" + (t.done ? " done" : "") }, cb,
+              el("div", { class: "txt" }, el("label", { for: cid }, t.title), el("div", { class: "pb-meta" }, dt, el("span", { class: "pill " + st.k }, st.txt), del))));
+          });
+          list.append(box);
+        });
+        const ti = el("input", { type: "text", placeholder: "Tugas baru…", "aria-label": "Tugas baru", id: "new-" + j.id });
+        const sel = el("select", { "aria-label": "Tahap", id: "stage-" + j.id }, stages.map(s => el("option", { value: s }, s)));
+        const dd = el("input", { type: "date", "aria-label": "Target tanggal", id: "due-" + j.id });
+        const btn = el("button", { class: "pb-btn main", type: "submit" }, "Tambah");
+        const f = el("form", { class: "pb-add" }, el("div", { class: "row" }, ti), el("div", { class: "row" }, sel, dd, btn));
+        f.addEventListener("submit", async ev => {
+          ev.preventDefault(); const v = ti.value.trim(); if (!v) return;
+          btn.disabled = true;
+          const urut = Math.max(0, ...jt.filter(t => t.stage === sel.value).map(t => t.order)) + 0.5;
+          try {
+            const r = await api("add", { task: { jurnal: j.id, tahap: sel.value, tugas: v, target: dd.value, urut } });
+            tasks.push({ id: r.id, journal: j.id, stage: sel.value, title: v, due: dd.value, done: false, doneAt: "", order: urut });
+            render(); msg("");
+          } catch (e) { msg("Gagal menambah: " + e.message, true); }
+          btn.disabled = false;
+        });
+        list.append(f);
+        const tg = el("button", { class: "pb-btn pb-toggle", type: "button", "aria-expanded": String(isOpen) }, isOpen ? "Tutup checklist" : "Buka checklist (" + jt.length + " tugas)");
+        tg.addEventListener("click", () => { open.has(j.id) ? open.delete(j.id) : open.add(j.id); saveOpen(); render(); });
+
+        wrap.append(el("article", { class: "pb-card" },
+          el("div", { class: "pb-top" }, el("span", { class: "pb-code" }, j.id), el("span", { class: "pb-rank" }, j.rank || "")),
+          el("h3", null, j.title), el("div", { class: "pb-target" }, "Target: " + (j.target || "belum ditentukan")),
+          pipe, el("div", { class: "pb-prog" }, el("span", null, el("b", null, nDone + "/" + jt.length), " tugas selesai"), el("b", null, pct + "%")),
+          nextBox, tg, list));
+      });
+    }
+
+    async function load() {
+      msg("Memuat data…");
+      try {
+        const r = await api("list");
+        journals = r.journals.sort((a, b) => a.order - b.order); tasks = r.tasks;
+        msg(""); render(); return true;
+      } catch (e) { msg("Gagal memuat: " + e.message, true); return false; }
+    }
+    function showMain(on) { $("setupPanel").hidden = on; $("mainArea").hidden = !on; }
+
+    $("sLate").addEventListener("click", () => { filter = filter === "late" ? null : "late"; render(); });
+    $("sSoon").addEventListener("click", () => { filter = filter === "soon" ? null : "soon"; render(); });
+    $("reload").addEventListener("click", load);
+    $("resetSetup").addEventListener("click", () => {
+      $("apiUrl").value = store.get(K_API) || DEFAULT_API; $("pin").value = ""; $("setupMsg").textContent = ""; showMain(false);
+    });
+    $("setupForm").addEventListener("submit", async ev => {
+      ev.preventDefault();
+      store.set(K_API, $("apiUrl").value.trim()); store.set(K_PIN, $("pin").value.trim());
+      $("setupMsg").textContent = "Menghubungkan…"; $("setupMsg").className = "pb-msg";
+      showMain(true);
+      if (!(await load())) { showMain(false); $("setupMsg").textContent = $("msg").textContent; $("setupMsg").className = "pb-msg err"; }
+    });
+
+    if ((store.get(K_API) || DEFAULT_API) && store.get(K_PIN)) { showMain(true); load(); }
+    else { $("apiUrl").value = store.get(K_API) || DEFAULT_API; showMain(false); }
+  })();
+  </script>
+</body>
+</html>

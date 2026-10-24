@@ -148,7 +148,7 @@ const links = [
     label: "Kendali Publikasi Jurnal",
     category: "Personal",
     section: "Publikasi",
-    url: "https://claude.ai/artifact/H2iYuNtDZV92XBX9yMiP6e",
+    url: "/publikasi/",
     description: "Progres 3 naskah jurnal: checklist, tugas berikutnya, dan pengingat tenggat."
   },
   {
@@ -672,7 +672,8 @@ function isDisabled(link) {
 }
 
 function externalTarget(url) {
-  return url.startsWith("mailto:") ? "" : " target=\"_blank\" rel=\"noopener noreferrer\"";
+  // Halaman internal (diawali "/") dibuka di tab yang sama agar status login tetap terbawa
+  return url.startsWith("mailto:") || url.startsWith("/") ? "" : " target=\"_blank\" rel=\"noopener noreferrer\"";
 }
 
 function renderMenu() {
