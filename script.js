@@ -151,6 +151,13 @@ const links = [
     url: "https://docs.google.com/spreadsheets/d/1ieois_AREkz5-yw-2grprjrGRQJ4THCTp_0aoKIkwVU/edit?usp=sharing",
     description: "Tracking publikasi."
   },
+  {
+    label: "Publikasi Jurnal — On Proses",
+    category: "Personal",
+    section: "Publikasi",
+    url: "https://drive.google.com/drive/folders/1gTnl5YRL2gP0CbvIeNH5XHg6sk4mAAJi?usp=sharing",
+    description: "Folder naskah publikasi jurnal yang sedang diproses."
+  },
 
   // MARS
   {
