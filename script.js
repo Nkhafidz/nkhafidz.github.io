@@ -611,29 +611,29 @@ const links = [
   {
     label: "Dashboard PAP 2027",
     category: "RSUD",
-    section: "Akreditasi",
+    section: "Akreditasi — Internal PAP",
     url: "https://nkhafidz.github.io/PAP-2027-DASHBOARD-UNIFIED.html",
     description: "Pemantauan real-time kesiapan akreditasi PAP 2027: % kesiapan, per standar, dan progres per anggota — otomatis dari checklist Google Sheets."
   },
   {
     label: "Laporan Progres PAP 2027",
     category: "RSUD",
-    section: "Akreditasi",
+    section: "Akreditasi — Internal PAP",
     url: "https://nkhafidz.github.io/pap-laporan.html",
     description: "Laporan progres PAP 2027: rekap status per standar, KPI, grafik, dan unduh JPG/PDF atau kirim ke Telegram — otomatis dari checklist."
   },
   {
-    label: "Akreditasi 2027",
+    label: "Folder PAP 2027 (Internal)",
     category: "RSUD",
-    section: "Akreditasi",
+    section: "Akreditasi — Internal PAP",
     url: "https://drive.google.com/drive/folders/1VFOqId31Ph-MfkOFK-qCLJlAVXEHufLd?usp=sharing",
     sensitive: true,
-    description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma (2027)."
+    description: "Folder kerja internal Tim PAP: dokumen per standar/EP, draf regulasi, ceklist, dan rapat."
   },
   {
     label: "Akreditasi 2027 Pusat",
     category: "RSUD",
-    section: "Akreditasi",
+    section: "Akreditasi — Pusat RS",
     url: "https://drive.google.com/drive/folders/1cw7lHgL4SpBNDiX7W4u-F_JK-OyTKgHo",
     sensitive: true,
     description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma (pusat)."
@@ -641,7 +641,7 @@ const links = [
   {
     label: "Progress Assessment 2027",
     category: "RSUD",
-    section: "Akreditasi",
+    section: "Akreditasi — Pusat RS",
     url: "https://docs.google.com/spreadsheets/d/1lBXzQZGvYrm5ayaQ3F_qQhyYJEwt3YzyDkDq9LVjRh0/edit",
     sensitive: true,
     description: "Self Assessment Re-Akreditasi 2027: elemen penilaian, kelengkapan bukti, link G.Drive, dan progres per EP."
@@ -649,7 +649,7 @@ const links = [
   {
     label: "SOP Akreditasi 2027",
     category: "RSUD",
-    section: "Akreditasi",
+    section: "Akreditasi — Pusat RS",
     url: "https://drive.google.com/drive/folders/1O-FExBMtjsEzu1csi1rE2EipDDWpC5wl",
     sensitive: true,
     description: "Folder SOP akreditasi RSUD Saras Adyatma 2027."
@@ -657,7 +657,7 @@ const links = [
   {
     label: "Akreditasi 2023",
     category: "RSUD",
-    section: "Akreditasi",
+    section: "Akreditasi — Pusat RS",
     url: "https://drive.google.com/drive/folders/1Sjq9XWMS-Em6dFziSTrQqGBXRfwr3Vu0?usp=sharing",
     sensitive: true,
     description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma (2023)."
@@ -665,7 +665,7 @@ const links = [
   {
     label: "Regulasi RSUD",
     category: "RSUD",
-    section: "Akreditasi",
+    section: "Akreditasi — Pusat RS",
     url: "https://drive.google.com/drive/folders/1poTfAlAwz-XUPvyXCH-JEHtlJPHhpIWv",
     sensitive: true,
     description: "Folder regulasi/dokumen RSUD Saras Adyatma."
