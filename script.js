@@ -634,9 +634,17 @@ const links = [
     label: "Akreditasi 2027 Pusat",
     category: "RSUD",
     section: "Akreditasi",
+    url: "https://drive.google.com/drive/folders/1cw7lHgL4SpBNDiX7W4u-F_JK-OyTKgHo",
+    sensitive: true,
+    description: "Folder dokumen akreditasi PAP RSUD Saras Adyatma (pusat)."
+  },
+  {
+    label: "Progress Assessment 2027",
+    category: "RSUD",
+    section: "Akreditasi",
     url: "https://docs.google.com/spreadsheets/d/1lBXzQZGvYrm5ayaQ3F_qQhyYJEwt3YzyDkDq9LVjRh0/edit",
     sensitive: true,
-    description: "Self Assessment Re-Akreditasi 2027 (pusat): elemen penilaian, kelengkapan bukti, link G.Drive, dan progres per EP."
+    description: "Self Assessment Re-Akreditasi 2027: elemen penilaian, kelengkapan bukti, link G.Drive, dan progres per EP."
   },
   {
     label: "SOP Akreditasi 2027",
