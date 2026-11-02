@@ -7,5 +7,10 @@ window.TTD_DATA = {
     instansi: 'RS Sedayu General Hospital',
     sip: 'SIP B/400.7.5.4/00334/II/2025',
     warna: '#1a5ea8'
+  },
+  fm: {
+    instansi: 'Familia Medika · Dokter Praktik Mandiri',
+    sip: 'SIP B/400.7.5.4/01781/IX/2023',
+    warna: '#1b9aaa'
   }
 };
