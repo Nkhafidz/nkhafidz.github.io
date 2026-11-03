@@ -631,6 +631,14 @@ const links = [
     description: "Folder kerja internal Tim PAP: dokumen per standar/EP, draf regulasi, ceklist, dan rapat."
   },
   {
+    label: "Ceklist PAP 52 EP",
+    category: "RSUD",
+    section: "Akreditasi — Internal PAP",
+    url: "https://docs.google.com/spreadsheets/d/1Tcaloh5Fl_-h4CxB-jwVxEOVOVeeene5fuLaOE2oIEk/edit?gid=1338236313#gid=1338236313",
+    sensitive: true,
+    description: "Ceklist PAP sederhana: 52 elemen penilaian (14 standar) — status, penanggung jawab, target selesai, dan catatan gap per anggota tim. Sumber data dashboard."
+  },
+  {
     label: "Akreditasi 2027 Pusat",
     category: "RSUD",
     section: "Akreditasi — Pusat RS",
