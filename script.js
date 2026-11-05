@@ -521,6 +521,13 @@ const links = [
     description: "Portal email Pemkab Bantul."
   },
   {
+    label: "TTE Bantul",
+    category: "RSUD",
+    section: "Kinerja",
+    url: "https://bantara.bantulkab.go.id/tte",
+    description: "Bantara: aplikasi tanda tangan elektronik (TTE) Pemkab Bantul dan verifikasi dokumen."
+  },
+  {
     label: "Administrasi Kepegawaian",
     category: "RSUD",
     section: "Kinerja",
